@@ -1,6 +1,6 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.constant;
 
-public class Message {
+public class Broadcast {
 	private static final String PREFIX = "cn.edu.xmu.ultraci.hotelcheckin.client.";
 	// 语音相关服务广播
 	public static final String IFLYTEK_INIT_FAIL = PREFIX + "iflytek.INIT_FAIL";

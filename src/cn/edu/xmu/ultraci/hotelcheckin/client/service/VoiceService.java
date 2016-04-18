@@ -1,4 +1,4 @@
-package cn.edu.xmu.ultraci.hotelcheckin.client.service.impl;
+package cn.edu.xmu.ultraci.hotelcheckin.client.service;
 
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
@@ -20,8 +20,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
-import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Message;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.IVoiceService;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.StringUtil;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.TimeUtil;
@@ -89,7 +88,7 @@ public class VoiceService extends Service {
 			public void onInit(int errorCode) {
 				if (errorCode != ErrorCode.SUCCESS) {
 					Log.e(TAG, String.format(getString(R.string.iflytek_init_fail), errorCode));
-					SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Message.IFLYTEK_INIT_FAIL));
+					SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_INIT_FAIL));
 				} else {
 					Log.i(TAG, getString(R.string.iflytek_init_succ));
 				}
@@ -135,7 +134,7 @@ public class VoiceService extends Service {
 			@Override
 			public void onVolumeChanged(int arg0, byte[] arg1) {
 				// 更新音量电平指示器
-				Intent intent = new Intent(Message.IFLYTEK_VOLUME_CHANGE);
+				Intent intent = new Intent(Broadcast.IFLYTEK_VOLUME_CHANGE);
 				intent.putExtra("volume", arg0);
 				SystemUtil.sendLocalBroadcast(VoiceService.this, intent);
 			}
@@ -146,7 +145,7 @@ public class VoiceService extends Service {
 				// 处理声纹密码验证结果
 				if (arg0.ret == ErrorCode.SUCCESS) {
 					Log.i(TAG, String.format(getString(R.string.iflytek_verify_succ), arg0.score, arg0.vid));
-					SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Message.IFLYTEK_VERIFY_SUCC));
+					SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_VERIFY_SUCC));
 				} else {
 					Log.i(TAG, String.format(getString(R.string.iflytek_verify_fail), arg0.err));
 					switch (arg0.err) {
@@ -154,15 +153,18 @@ public class VoiceService extends Service {
 					case VerifierResult.MSS_ERROR_IVP_MUCH_NOISE:
 					case VerifierResult.MSS_ERROR_IVP_TOO_LOW:
 					case VerifierResult.MSS_ERROR_IVP_ZERO_AUDIO:
-						SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Message.IFLYTEK_VERIFY_FAIL_VOICE));
+						SystemUtil.sendLocalBroadcast(VoiceService.this,
+								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_VOICE));
 						break;
 					// 音频内容与给定文本不一致
 					case VerifierResult.MSS_ERROR_IVP_TEXT_NOT_MATCH:
-						SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Message.IFLYTEK_VERIFY_FAIL_TEXT));
+						SystemUtil.sendLocalBroadcast(VoiceService.this,
+								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_TEXT));
 						break;
 					// 其他错误
 					default:
-						SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Message.IFLYTEK_VERIFY_FAIL_OTHER));
+						SystemUtil.sendLocalBroadcast(VoiceService.this,
+								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_OTHER));
 						break;
 					}
 				}
@@ -184,13 +186,13 @@ public class VoiceService extends Service {
 			@Override
 			public void onEndOfSpeech() {
 				// 隐藏音量电平指示器
-				SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Message.IFLYTEK_END_RECORD));
+				SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_END_RECORD));
 			}
 
 			@Override
 			public void onBeginOfSpeech() {
 				// 显示音量电平指示器
-				SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Message.IFLYTEK_START_RECORD));
+				SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_START_RECORD));
 			}
 		};
 		// 创建实例
@@ -273,23 +275,19 @@ public class VoiceService extends Service {
 		mSoundPool.play(soundID, 1, 1, 0, 0, 1);
 	}
 
-	public class VoiceServiceBinder extends Binder implements IVoiceService {
-		@Override
+	public class VoiceServiceBinder extends Binder {
 		public String generatePassword() {
 			return VoiceService.this.generatePassword();
 		}
 
-		@Override
 		public void verifyVoiceprint(String uid, String pwd) {
 			VoiceService.this.verifyVoiceprint(uid, pwd);
 		}
 
-		@Override
 		public void speechSynthesis(String text) {
 			VoiceService.this.speechSynthesis(text);
 		}
 
-		@Override
 		public void playEffect(int sound) {
 			VoiceService.this.playEffect(sound);
 		}

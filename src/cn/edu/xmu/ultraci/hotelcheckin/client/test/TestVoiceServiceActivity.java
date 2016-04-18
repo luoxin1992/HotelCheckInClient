@@ -13,9 +13,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
-import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Message;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.impl.VoiceService;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.impl.VoiceService.VoiceServiceBinder;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.VoiceService;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.VoiceService.VoiceServiceBinder;
 
 public class TestVoiceServiceActivity extends Activity {
 
@@ -34,14 +34,14 @@ public class TestVoiceServiceActivity extends Activity {
 
 		receiver = new TestVoiceServiceBroadcastReceiver();
 		IntentFilter filter = new IntentFilter();
-		filter.addAction(Message.IFLYTEK_INIT_FAIL);
-		filter.addAction(Message.IFLYTEK_START_RECORD);
-		filter.addAction(Message.IFLYTEK_VOLUME_CHANGE);
-		filter.addAction(Message.IFLYTEK_END_RECORD);
-		filter.addAction(Message.IFLYTEK_VERIFY_SUCC);
-		filter.addAction(Message.IFLYTEK_VERIFY_FAIL_VOICE);
-		filter.addAction(Message.IFLYTEK_VERIFY_FAIL_TEXT);
-		filter.addAction(Message.IFLYTEK_VERIFY_FAIL_OTHER);
+		filter.addAction(Broadcast.IFLYTEK_INIT_FAIL);
+		filter.addAction(Broadcast.IFLYTEK_START_RECORD);
+		filter.addAction(Broadcast.IFLYTEK_VOLUME_CHANGE);
+		filter.addAction(Broadcast.IFLYTEK_END_RECORD);
+		filter.addAction(Broadcast.IFLYTEK_VERIFY_SUCC);
+		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_VOICE);
+		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_TEXT);
+		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_OTHER);
 		LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
 		conn(null);
 
@@ -123,30 +123,30 @@ public class TestVoiceServiceActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
-			case Message.IFLYTEK_INIT_FAIL:
+			case Broadcast.IFLYTEK_INIT_FAIL:
 				sb.append("引擎初始化失败\n");
 				break;
-			case Message.IFLYTEK_START_RECORD:
+			case Broadcast.IFLYTEK_START_RECORD:
 				sb.append("开始录音\n");
 				break;
-			case Message.IFLYTEK_VOLUME_CHANGE:
+			case Broadcast.IFLYTEK_VOLUME_CHANGE:
 				sb.append("音量变化");
 				sb.append(intent.getIntExtra("volume", -1));
 				sb.append("\n");
 				break;
-			case Message.IFLYTEK_END_RECORD:
+			case Broadcast.IFLYTEK_END_RECORD:
 				sb.append("结束录音\n");
 				break;
-			case Message.IFLYTEK_VERIFY_SUCC:
+			case Broadcast.IFLYTEK_VERIFY_SUCC:
 				sb.append("验证成功\n");
 				break;
-			case Message.IFLYTEK_VERIFY_FAIL_VOICE:
+			case Broadcast.IFLYTEK_VERIFY_FAIL_VOICE:
 				sb.append("验证失败声音原因\n");
 				break;
-			case Message.IFLYTEK_VERIFY_FAIL_TEXT:
+			case Broadcast.IFLYTEK_VERIFY_FAIL_TEXT:
 				sb.append("验证失败文本原因\n");
 				break;
-			case Message.IFLYTEK_VERIFY_FAIL_OTHER:
+			case Broadcast.IFLYTEK_VERIFY_FAIL_OTHER:
 				sb.append("验证失败其他原因\n");
 				break;
 			}
