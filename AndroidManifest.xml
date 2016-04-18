@@ -31,10 +31,17 @@
         </service>
         <service android:name=".service.CoreService" >
         </service>
+        <service android:name=".service.BluetoothService" >
+        </service>
 
         <activity
             android:name=".test.TestVoiceServiceActivity"
             android:label="@string/title_activity_test_voice_service" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.BaseActivity"

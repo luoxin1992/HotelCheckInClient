@@ -9,11 +9,13 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.MethodName;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.VoiceService;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.VoiceService.VoiceServiceBinder;
 
@@ -80,42 +82,20 @@ public class TestVoiceServiceActivity extends Activity {
 	}
 
 	public void test1(View v) throws InterruptedException {
-		binder.speechSynthesis("欢迎使用酒店自助入住终端。");
-		new Thread() {
-			public void run() {
-				try {
-					Thread.sleep(1500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				binder.speechSynthesis("很抱歉，听不清您的声音。让我们再试一次。");
-			};
-		}.start();
+		binder.invokeMethod(MethodName.VOICE_SPEECH_SYNTHESIS, new String[] { "欢迎使用酒店自助入住终端" });
+		SystemClock.sleep(3000);
+		binder.invokeMethod(MethodName.VOICE_SPEECH_SYNTHESIS, new String[] { "骆欣，我们需要验证您的身份。请在听到提示音后朗读屏幕上的数字。" });
+		SystemClock.sleep(5000);
+		binder.invokeMethod(MethodName.VOICE_PLAY_EFFECT, new Integer[] { R.raw.beep });
 	}
 
 	public void test2(View v) {
-		pwd = binder.generatePassword();
-		sb.append(pwd);
-		sb.append("\n");
-		tv.setText(sb.toString());
 	}
 
 	public void test3(View v) {
-		binder.verifyVoiceprint("hello2", pwd);
 	}
 
 	public void test4(View v) throws InterruptedException {
-		binder.playEffect(1);
-		new Thread() {
-			public void run() {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				binder.playEffect(2);
-			};
-		}.start();
 	}
 
 	class TestVoiceServiceBroadcastReceiver extends BroadcastReceiver {

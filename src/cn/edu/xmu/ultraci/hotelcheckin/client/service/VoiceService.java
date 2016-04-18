@@ -1,5 +1,9 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeakerVerifier;
@@ -21,6 +25,8 @@ import android.os.IBinder;
 import android.util.Log;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.LogTemplate;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.MethodName;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.StringUtil;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.TimeUtil;
@@ -35,6 +41,7 @@ public class VoiceService extends Service {
 	private VerifierListener mVerifierListener;
 
 	private SoundPool mSoundPool;
+	private Map<Integer, Integer> mSoundMap;
 
 	@Override
 	public void onCreate() {
@@ -42,8 +49,6 @@ public class VoiceService extends Service {
 
 		initSDK();
 		initSoundPool();
-		setSynthesisParams();
-		setVerifierParams();
 	}
 
 	@Override
@@ -87,10 +92,10 @@ public class VoiceService extends Service {
 			@Override
 			public void onInit(int errorCode) {
 				if (errorCode != ErrorCode.SUCCESS) {
-					Log.e(TAG, String.format(getString(R.string.iflytek_init_fail), errorCode));
+					Log.e(TAG, String.format(LogTemplate.IFLYTEK_INIT_FAIL, errorCode));
 					SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_INIT_FAIL));
 				} else {
-					Log.i(TAG, getString(R.string.iflytek_init_succ));
+					Log.i(TAG, LogTemplate.IFLYTEK_INIT_SUCC);
 				}
 			}
 		};
@@ -103,9 +108,9 @@ public class VoiceService extends Service {
 			@Override
 			public void onCompleted(SpeechError arg0) {
 				if (arg0 != null && arg0.getErrorCode() != ErrorCode.SUCCESS) {
-					Log.e(TAG, String.format(getString(R.string.iflytek_synthesis_fail), arg0.getErrorCode()));
+					Log.e(TAG, String.format(LogTemplate.IFLYTEK_SYNTHESIS_FAIL, arg0.getErrorCode()));
 				} else {
-					Log.i(TAG, getString(R.string.iflytek_synthesis_succ));
+					Log.i(TAG, LogTemplate.IFLYTEK_SYNTHESIS_SUCC);
 				}
 			}
 
@@ -141,14 +146,22 @@ public class VoiceService extends Service {
 
 			@Override
 			public void onResult(VerifierResult arg0) {
-				System.out.println(arg0.source);
 				// 处理声纹密码验证结果
 				if (arg0.ret == ErrorCode.SUCCESS) {
-					Log.i(TAG, String.format(getString(R.string.iflytek_verify_succ), arg0.score, arg0.vid));
+					Log.i(TAG, String.format(LogTemplate.IFLYTEK_VERIFY_SUCC, arg0.vid, arg0.score));
 					SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_VERIFY_SUCC));
-				} else {
-					Log.i(TAG, String.format(getString(R.string.iflytek_verify_fail), arg0.err));
-					switch (arg0.err) {
+				}
+			}
+
+			@Override
+			public void onEvent(int arg0, int arg1, int arg2, Bundle arg3) {
+			}
+
+			@Override
+			public void onError(SpeechError arg0) {
+				if (arg0 != null && arg0.getErrorCode() != ErrorCode.SUCCESS) {
+					Log.e(TAG, String.format(LogTemplate.IFLYTEK_VERIFY_FAIL, arg0.getErrorCode()));
+					switch (arg0.getErrorCode()) {
 					// 太多噪音、声音太小、没检测到音频
 					case VerifierResult.MSS_ERROR_IVP_MUCH_NOISE:
 					case VerifierResult.MSS_ERROR_IVP_TOO_LOW:
@@ -171,19 +184,6 @@ public class VoiceService extends Service {
 			}
 
 			@Override
-			public void onEvent(int arg0, int arg1, int arg2, Bundle arg3) {
-			}
-
-			@Override
-			public void onError(SpeechError arg0) {
-				if (arg0 != null && arg0.getErrorCode() != ErrorCode.SUCCESS) {
-					Log.e(TAG, String.format(getString(R.string.iflytek_synthesis_fail), arg0.getErrorCode()));
-				} else {
-					Log.i(TAG, getString(R.string.iflytek_synthesis_succ));
-				}
-			}
-
-			@Override
 			public void onEndOfSpeech() {
 				// 隐藏音量电平指示器
 				SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_END_RECORD));
@@ -202,9 +202,10 @@ public class VoiceService extends Service {
 
 	@TargetApi(21)
 	public void initSoundPool() {
+		mSoundMap = new HashMap<Integer, Integer>();
 		mSoundPool = new SoundPool.Builder().build();
-		mSoundPool.load(this, R.raw.beep, 1);
-		mSoundPool.load(this, R.raw.ding, 1);
+		mSoundMap.put(R.raw.beep, mSoundPool.load(this, R.raw.beep, 1));
+		mSoundMap.put(R.raw.ding, mSoundPool.load(this, R.raw.ding, 1));
 	}
 
 	/**
@@ -231,17 +232,20 @@ public class VoiceService extends Service {
 				getCacheDir() + "/iflytek/tts/" + TimeUtil.getCurrentTime() + ".pcm");
 	}
 
-	public void setVerifierParams() {
+	public void setVerifierParams(String uid, String pwd) {
 		// 设置声纹业务类型
 		mVerifier.setParameter(SpeechConstant.ISV_SST, "verify");
 		// 设置声纹密码类型
 		mVerifier.setParameter(SpeechConstant.ISV_PWDT, "3");
+		// 设置用户唯一标识
+		mVerifier.setParameter(SpeechConstant.AUTH_ID, uid);
+		// 设置验证使用的声纹密码
+		mVerifier.setParameter(SpeechConstant.ISV_PWD, pwd);
 		// 设置声纹录音保存路径
 		mVerifier.setParameter(SpeechConstant.ISV_AUDIO_PATH,
 				getCacheDir() + "/iflytek/isv/" + TimeUtil.getCurrentTime() + ".pcm");
 		// mVerifier.setParameter(SpeechConstant.AUDIO_SOURCE,
 		// MediaRecorder.AudioSource.VOICE_RECOGNITION + "");
-
 	}
 
 	public String generatePassword() {
@@ -250,19 +254,17 @@ public class VoiceService extends Service {
 
 	public void verifyVoiceprint(String uid, String pwd) {
 		if (StringUtil.isUsername(uid) && StringUtil.isNumeric(pwd)) {
+			setVerifierParams(uid, pwd);
 			if (mVerifier.isListening()) {
 				mVerifier.stopListening();
 			}
-			// 设置用户唯一标识
-			mVerifier.setParameter(SpeechConstant.AUTH_ID, uid);
-			// 设置验证使用的声纹密码
-			mVerifier.setParameter(SpeechConstant.ISV_PWD, pwd);
 			mVerifier.startListening(mVerifierListener);
 		}
 	}
 
 	public void speechSynthesis(String text) {
 		if (!StringUtil.isBlank(text)) {
+			setSynthesisParams();
 			if (mSynthesizer.isSpeaking()) {
 				mSynthesizer.stopSpeaking();
 			}
@@ -270,26 +272,31 @@ public class VoiceService extends Service {
 		}
 	}
 
-	public void playEffect(int soundID) {
-		Log.i(TAG, String.format(getString(R.string.soundpool_play_effect), soundID));
-		mSoundPool.play(soundID, 1, 1, 0, 0, 1);
+	public void playEffect(int resId) {
+		mSoundPool.play(mSoundMap.get(resId), 1, 1, 0, 0, 1);
 	}
 
 	public class VoiceServiceBinder extends Binder {
-		public String generatePassword() {
-			return VoiceService.this.generatePassword();
-		}
-
-		public void verifyVoiceprint(String uid, String pwd) {
-			VoiceService.this.verifyVoiceprint(uid, pwd);
-		}
-
-		public void speechSynthesis(String text) {
-			VoiceService.this.speechSynthesis(text);
-		}
-
-		public void playEffect(int sound) {
-			VoiceService.this.playEffect(sound);
+		public Object invokeMethod(String methodName, Object[] paramValues) {
+			try {
+				switch (methodName) {
+				case MethodName.VOICE_GENERATE_PASSWORD:
+					return SystemUtil.invokeServiceMethod(VoiceService.this, methodName, null, null);
+				case MethodName.VOICE_VERIFY_VOICEPRINT:
+					return SystemUtil.invokeServiceMethod(VoiceService.this, methodName,
+							new Class<?>[] { String.class, String.class }, paramValues);
+				case MethodName.VOICE_SPEECH_SYNTHESIS:
+					return SystemUtil.invokeServiceMethod(VoiceService.this, methodName,
+							new Class<?>[] { String.class }, paramValues);
+				case MethodName.VOICE_PLAY_EFFECT:
+					return SystemUtil.invokeServiceMethod(VoiceService.this, methodName, new Class<?>[] { int.class },
+							paramValues);
+				}
+			} catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			return null;
 		}
 	}
 
