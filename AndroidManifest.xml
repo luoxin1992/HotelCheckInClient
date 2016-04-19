@@ -35,6 +35,15 @@
         </service>
 
         <activity
+            android:name=".test.TestCoreServiceActivity"
+            android:label="@string/title_activity_test_core_service" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".test.TestVoiceServiceActivity"
             android:label="@string/title_activity_test_voice_service" >
             <intent-filter>
@@ -45,6 +54,16 @@
         </activity>
         <activity
             android:name=".activity.BaseActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.BaseActivityWithoutBottom"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
             <intent-filter>

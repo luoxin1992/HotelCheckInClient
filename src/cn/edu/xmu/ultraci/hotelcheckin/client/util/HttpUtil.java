@@ -18,7 +18,7 @@ public class HttpUtil {
 	}
 
 	public static void download(String url, RequestParams params, FileAsyncHttpResponseHandler responseHandler) {
-		get(url, params, responseHandler);
+		// TODO 异步文件下载
 	}
 
 }

@@ -11,8 +11,8 @@ public class Config {
 	// 服务端
 	// public static final String SERVER_IP = "103.37.165.152";
 	// public static final String SERVER_PORT = "8081";
-	public static final String SERVER_IP = "192.168.1.100";
-	public static final String SERVER_PORT = "8080";
+	public static final String SERVER_IP = "10.30.175.82";
+	public static final String SERVER_PORT = "9237";
 
 	// 鉴权
 	public static final String TOKEN = "cVko8367";

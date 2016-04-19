@@ -17,8 +17,8 @@ public class Action {
 	public static final String QUERY_INFO = "info";
 	// 房务类
 	public static final String NEW_GUEST = "guest";
-	public static final String CHECK_IN = "checkin";
-	public static final String CHECK_OUT = "checkout";
+	public static final String CHECKIN = "checkin";
+	public static final String CHECKOUT = "checkout";
 	@Deprecated
 	public static final String PAY_RESULT = "pay";
 
