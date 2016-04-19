@@ -16,8 +16,8 @@ import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.MethodName;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.VoiceService;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.VoiceService.VoiceServiceBinder;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService.VoiceServiceBinder;
 
 public class TestVoiceServiceActivity extends Activity {
 
@@ -37,10 +37,10 @@ public class TestVoiceServiceActivity extends Activity {
 		receiver = new TestVoiceServiceBroadcastReceiver();
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Broadcast.IFLYTEK_INIT_FAIL);
-		filter.addAction(Broadcast.IFLYTEK_START_RECORD);
-		filter.addAction(Broadcast.IFLYTEK_VOLUME_CHANGE);
-		filter.addAction(Broadcast.IFLYTEK_END_RECORD);
-		filter.addAction(Broadcast.IFLYTEK_VERIFY_SUCC);
+		filter.addAction(Broadcast.IFLYTEK_RECORD_START);
+		filter.addAction(Broadcast.IFLYTEK_RECORD_VOLUME_CHANGE);
+		filter.addAction(Broadcast.IFLYTEK_RECORD_END);
+		filter.addAction(Broadcast.IFLYTEK_VERIFY_OK);
 		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_VOICE);
 		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_TEXT);
 		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_OTHER);
@@ -57,7 +57,7 @@ public class TestVoiceServiceActivity extends Activity {
 	}
 
 	public void conn(View v) {
-		Intent service = new Intent(this, VoiceService.class);
+		Intent service = new Intent(this, ThirdPartyService.class);
 		conn = new ServiceConnection() {
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
@@ -106,18 +106,18 @@ public class TestVoiceServiceActivity extends Activity {
 			case Broadcast.IFLYTEK_INIT_FAIL:
 				sb.append("引擎初始化失败\n");
 				break;
-			case Broadcast.IFLYTEK_START_RECORD:
+			case Broadcast.IFLYTEK_RECORD_START:
 				sb.append("开始录音\n");
 				break;
-			case Broadcast.IFLYTEK_VOLUME_CHANGE:
+			case Broadcast.IFLYTEK_RECORD_VOLUME_CHANGE:
 				sb.append("音量变化");
 				sb.append(intent.getIntExtra("volume", -1));
 				sb.append("\n");
 				break;
-			case Broadcast.IFLYTEK_END_RECORD:
+			case Broadcast.IFLYTEK_RECORD_END:
 				sb.append("结束录音\n");
 				break;
-			case Broadcast.IFLYTEK_VERIFY_SUCC:
+			case Broadcast.IFLYTEK_VERIFY_OK:
 				sb.append("验证成功\n");
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_VOICE:

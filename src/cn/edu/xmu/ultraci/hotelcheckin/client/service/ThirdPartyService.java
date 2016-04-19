@@ -1,9 +1,6 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.alibaba.fastjson.JSONObject;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeakerVerifier;
@@ -14,25 +11,35 @@ import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.VerifierListener;
 import com.iflytek.cloud.VerifierResult;
 
-import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.LogTemplate;
-import cn.edu.xmu.ultraci.hotelcheckin.client.constant.MethodName;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.StringUtil;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.TimeUtil;
+import cn.smssdk.EventHandler;
+import cn.smssdk.SMSSDK;
 
-public class VoiceService extends Service {
-	private static final String TAG = VoiceService.class.getSimpleName();
+/**
+ * 第三方服务<br>
+ * <ul>
+ * 科大讯飞语音合成<br>
+ * 科大讯飞声纹密码<br>
+ * 掌淘科技验证码<br>
+ * 云片网络验证码<br>
+ * </ul>
+ * 
+ * @author LuoXin
+ *
+ */
+public class ThirdPartyService extends Service {
+	private static final String TAG = ThirdPartyService.class.getSimpleName();
 
 	private InitListener mInitListener;
 	private SpeechSynthesizer mSynthesizer;
@@ -40,15 +47,12 @@ public class VoiceService extends Service {
 	private SpeakerVerifier mVerifier;
 	private VerifierListener mVerifierListener;
 
-	private SoundPool mSoundPool;
-	private Map<Integer, Integer> mSoundMap;
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
-		initSDK();
-		initSoundPool();
+		initXFSdk();
+		initZTSdk();
 	}
 
 	@Override
@@ -59,7 +63,7 @@ public class VoiceService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		// 销毁语音SDK实例
+		// 销毁讯飞SDK实例
 		if (mSynthesizer != null) {
 			if (mSynthesizer.isSpeaking()) {
 				mSynthesizer.stopSpeaking();
@@ -72,10 +76,8 @@ public class VoiceService extends Service {
 			}
 			mVerifier.destroy();
 		}
-		// 销毁SoundPool
-		if (mSoundPool != null) {
-			mSoundPool.release();
-		}
+		// 解除掌淘SDK事件监听器
+		SMSSDK.unregisterAllEventHandler();
 	}
 
 	@Override
@@ -86,16 +88,16 @@ public class VoiceService extends Service {
 	/**
 	 * 初始化科大讯飞SDK
 	 */
-	public void initSDK() {
+	private void initXFSdk() {
 		// SDK初始化监听器
 		mInitListener = new InitListener() {
 			@Override
 			public void onInit(int errorCode) {
 				if (errorCode != ErrorCode.SUCCESS) {
 					Log.e(TAG, String.format(LogTemplate.IFLYTEK_INIT_FAIL, errorCode));
-					SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_INIT_FAIL));
+					SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_INIT_FAIL));
 				} else {
-					Log.i(TAG, LogTemplate.IFLYTEK_INIT_SUCC);
+					Log.i(TAG, LogTemplate.IFLYTEK_INIT_OK);
 				}
 			}
 		};
@@ -110,7 +112,7 @@ public class VoiceService extends Service {
 				if (arg0 != null && arg0.getErrorCode() != ErrorCode.SUCCESS) {
 					Log.e(TAG, String.format(LogTemplate.IFLYTEK_SYNTHESIS_FAIL, arg0.getErrorCode()));
 				} else {
-					Log.i(TAG, LogTemplate.IFLYTEK_SYNTHESIS_SUCC);
+					Log.i(TAG, LogTemplate.IFLYTEK_SYNTHESIS_OK);
 				}
 			}
 
@@ -139,17 +141,17 @@ public class VoiceService extends Service {
 			@Override
 			public void onVolumeChanged(int arg0, byte[] arg1) {
 				// 更新音量电平指示器
-				Intent intent = new Intent(Broadcast.IFLYTEK_VOLUME_CHANGE);
+				Intent intent = new Intent(Broadcast.IFLYTEK_RECORD_VOLUME_CHANGE);
 				intent.putExtra("volume", arg0);
-				SystemUtil.sendLocalBroadcast(VoiceService.this, intent);
+				SystemUtil.sendLocalBroadcast(ThirdPartyService.this, intent);
 			}
 
 			@Override
 			public void onResult(VerifierResult arg0) {
 				// 处理声纹密码验证结果
 				if (arg0.ret == ErrorCode.SUCCESS) {
-					Log.i(TAG, String.format(LogTemplate.IFLYTEK_VERIFY_SUCC, arg0.vid, arg0.score));
-					SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_VERIFY_SUCC));
+					Log.i(TAG, String.format(LogTemplate.IFLYTEK_VERIFY_OK, arg0.vid));
+					SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_VERIFY_OK));
 				}
 			}
 
@@ -166,17 +168,17 @@ public class VoiceService extends Service {
 					case VerifierResult.MSS_ERROR_IVP_MUCH_NOISE:
 					case VerifierResult.MSS_ERROR_IVP_TOO_LOW:
 					case VerifierResult.MSS_ERROR_IVP_ZERO_AUDIO:
-						SystemUtil.sendLocalBroadcast(VoiceService.this,
+						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
 								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_VOICE));
 						break;
 					// 音频内容与给定文本不一致
 					case VerifierResult.MSS_ERROR_IVP_TEXT_NOT_MATCH:
-						SystemUtil.sendLocalBroadcast(VoiceService.this,
+						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
 								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_TEXT));
 						break;
 					// 其他错误
 					default:
-						SystemUtil.sendLocalBroadcast(VoiceService.this,
+						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
 								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_OTHER));
 						break;
 					}
@@ -186,13 +188,13 @@ public class VoiceService extends Service {
 			@Override
 			public void onEndOfSpeech() {
 				// 隐藏音量电平指示器
-				SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_END_RECORD));
+				SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_RECORD_END));
 			}
 
 			@Override
 			public void onBeginOfSpeech() {
 				// 显示音量电平指示器
-				SystemUtil.sendLocalBroadcast(VoiceService.this, new Intent(Broadcast.IFLYTEK_START_RECORD));
+				SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_RECORD_START));
 			}
 		};
 		// 创建实例
@@ -200,18 +202,63 @@ public class VoiceService extends Service {
 		mVerifier = SpeakerVerifier.createVerifier(this, mInitListener);
 	}
 
-	@TargetApi(21)
-	public void initSoundPool() {
-		mSoundMap = new HashMap<Integer, Integer>();
-		mSoundPool = new SoundPool.Builder().build();
-		mSoundMap.put(R.raw.beep, mSoundPool.load(this, R.raw.beep, 1));
-		mSoundMap.put(R.raw.ding, mSoundPool.load(this, R.raw.ding, 1));
+	/**
+	 * 初始化掌淘科技SDK
+	 */
+	private void initZTSdk() {
+		SMSSDK.registerEventHandler(new EventHandler() {
+			@Override
+			public void afterEvent(int arg0, int arg1, Object arg2) {
+				if (arg1 == SMSSDK.RESULT_COMPLETE) {
+					switch (arg0) {
+					case SMSSDK.EVENT_GET_CONTACTS:
+						break;
+					case SMSSDK.EVENT_GET_FRIENDS_IN_APP:
+						break;
+					case SMSSDK.EVENT_GET_NEW_FRIENDS_COUNT:
+						break;
+					case SMSSDK.EVENT_GET_SUPPORTED_COUNTRIES:
+						break;
+					case SMSSDK.EVENT_GET_VERIFICATION_CODE:
+						// 请求短信验证码
+						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+								new Intent(Broadcast.MOB_CAPTCHA_SMS_SEND));
+						Log.i(TAG, LogTemplate.MOB_CAPTCHA_SMS_SEND);
+						break;
+					case SMSSDK.EVENT_GET_VOICE_VERIFICATION_CODE:
+						// 请求语音验证码
+						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+								new Intent(Broadcast.MOB_CAPTCHA_VOICE_SEND));
+						Log.i(TAG, LogTemplate.MOB_CAPTCHA_VOICE_SEND);
+						break;
+					case SMSSDK.EVENT_SUBMIT_USER_INFO:
+						break;
+					case SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE:
+						// 提交验证码
+						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+								new Intent(Broadcast.MOB_CAPTCHA_VERIFY_OK));
+						Log.i(TAG, LogTemplate.MOB_CAPTCHA_VERIFY_OK);
+						break;
+					}
+				} else {
+					JSONObject err = JSONObject.parseObject(arg2.toString());
+					if (err.containsKey("status") && err.getInteger("status") == 468) {
+						// 官方无文档，暂时只处理验证码错误468
+						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+								new Intent(Broadcast.MOB_CAPTCHA_VERIFY_FAIL));
+						Log.w(TAG, LogTemplate.MOB_CAPTCHA_VERIFY_FAIL);
+					} else {
+						Log.e(TAG, String.format(LogTemplate.MOB_CAPTCHA_UNKNOWN_FAIL, err.getInteger("status")));
+					}
+				}
+			}
+		});
 	}
 
 	/**
 	 * 设置语音合成参数
 	 */
-	public void setSynthesisParams() {
+	private void setSynthesisParams() {
 		// 设置引擎类型
 		mSynthesizer.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
 		// 设置合成发音人
@@ -232,7 +279,15 @@ public class VoiceService extends Service {
 				getCacheDir() + "/iflytek/tts/" + TimeUtil.getCurrentTime() + ".pcm");
 	}
 
-	public void setVerifierParams(String uid, String pwd) {
+	/**
+	 * 设置声纹验证参数
+	 * 
+	 * @param uid
+	 *            用户ID
+	 * @param pwd
+	 *            声纹密码
+	 */
+	private void setVerifierParams(String uid, String pwd) {
 		// 设置声纹业务类型
 		mVerifier.setParameter(SpeechConstant.ISV_SST, "verify");
 		// 设置声纹密码类型
@@ -248,10 +303,23 @@ public class VoiceService extends Service {
 		// MediaRecorder.AudioSource.VOICE_RECOGNITION + "");
 	}
 
-	public String generatePassword() {
+	/**
+	 * 生成声纹密码
+	 * 
+	 * @return 声纹密码
+	 */
+	public String getVoiceprintPassword() {
 		return mVerifier.generatePassword(8);
 	}
 
+	/**
+	 * 验证声纹
+	 * 
+	 * @param uid
+	 *            用户ID
+	 * @param pwd
+	 *            声纹密码
+	 */
 	public void verifyVoiceprint(String uid, String pwd) {
 		if (StringUtil.isUsername(uid) && StringUtil.isNumeric(pwd)) {
 			setVerifierParams(uid, pwd);
@@ -262,7 +330,13 @@ public class VoiceService extends Service {
 		}
 	}
 
-	public void speechSynthesis(String text) {
+	/**
+	 * 合成语音
+	 * 
+	 * @param text
+	 *            合成文本
+	 */
+	public void syntheticSpeech(String text) {
 		if (!StringUtil.isBlank(text)) {
 			setSynthesisParams();
 			if (mSynthesizer.isSpeaking()) {
@@ -272,31 +346,75 @@ public class VoiceService extends Service {
 		}
 	}
 
-	public void playEffect(int resId) {
-		mSoundPool.play(mSoundMap.get(resId), 1, 1, 0, 0, 1);
+	/**
+	 * 发送短信验证码(云片网络)
+	 * 
+	 * @param mobile
+	 *            手机号
+	 */
+	public void sendSMSCaptchaV2(String mobile) {
+		// TODO
+	}
+
+	/**
+	 * 发送短信验证码(掌淘科技)
+	 * 
+	 * @param mobile
+	 *            手机号
+	 */
+	public void sendSMSCaptcha(String mobile) {
+		SMSSDK.getVerificationCode("86", mobile);
+	}
+
+	/**
+	 * 发送语音验证码(掌淘科技)
+	 * 
+	 * @param mobile
+	 *            手机号
+	 */
+	public void sendVoiceCaptcha(String mobile) {
+		SMSSDK.getVoiceVerifyCode("86", mobile);
+	}
+
+	/**
+	 * 校验验证码(掌淘科技)
+	 * 
+	 * @param mobile
+	 *            手机号
+	 * @param captcha
+	 *            验证码
+	 */
+	public void verifyCaptcha(String mobile, String captcha) {
+		SMSSDK.submitVerificationCode("86", mobile, captcha);
 	}
 
 	public class VoiceServiceBinder extends Binder {
-		public Object invokeMethod(String methodName, Object[] paramValues) {
-			try {
-				switch (methodName) {
-				case MethodName.VOICE_GENERATE_PASSWORD:
-					return SystemUtil.invokeServiceMethod(VoiceService.this, methodName, null, null);
-				case MethodName.VOICE_VERIFY_VOICEPRINT:
-					return SystemUtil.invokeServiceMethod(VoiceService.this, methodName,
-							new Class<?>[] { String.class, String.class }, paramValues);
-				case MethodName.VOICE_SPEECH_SYNTHESIS:
-					return SystemUtil.invokeServiceMethod(VoiceService.this, methodName,
-							new Class<?>[] { String.class }, paramValues);
-				case MethodName.VOICE_PLAY_EFFECT:
-					return SystemUtil.invokeServiceMethod(VoiceService.this, methodName, new Class<?>[] { int.class },
-							paramValues);
-				}
-			} catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-				e.printStackTrace();
-			}
-			return null;
+		public String getVoiceprintPassword() {
+			return ThirdPartyService.this.getVoiceprintPassword();
+		}
+
+		public void verifyVoiceprint(String uid, String pwd) {
+			ThirdPartyService.this.verifyVoiceprint(uid, pwd);
+		}
+
+		public void synthesicSpeech(String text) {
+			ThirdPartyService.this.syntheticSpeech(text);
+		}
+
+		public void sendSMSCaptchaV2(String mobile) {
+			ThirdPartyService.this.sendSMSCaptchaV2(mobile);
+		}
+
+		public void sendSMSCaptcha(String mobile) {
+			ThirdPartyService.this.sendSMSCaptcha(mobile);
+		}
+
+		public void sendVoiceCaptcha(String mobile) {
+			ThirdPartyService.this.sendVoiceCaptcha(mobile);
+		}
+
+		public void verifyCaptcha(String mobile, String captcha) {
+			ThirdPartyService.this.verifyCaptcha(mobile, captcha);
 		}
 	}
 

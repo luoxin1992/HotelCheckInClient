@@ -60,6 +60,6 @@ public class TestCoreServiceActivity extends Activity {
 	}
 
 	public void sms(View v) {
-		new SmsService().sendCaptcha();
+		new SmsService().sendCaptchaV2();
 	}
 }
