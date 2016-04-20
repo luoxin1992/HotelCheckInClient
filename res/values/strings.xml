@@ -2,11 +2,28 @@
 <resources>
 
     <string name="app_name">酒店自助入住终端</string>
+    <string name="ib_back">后退按钮</string>
+    <string name="iv_notice">公告图案</string>
+    
+    <string name="iv_pwd1">声纹密码第1位</string>
+    <string name="iv_pwd2">声纹密码第2位</string>
+    <string name="iv_pwd3">声纹密码第3位</string>
+    <string name="iv_pwd4">声纹密码第4位</string>
+    <string name="iv_pwd5">声纹密码第5位</string>
+    <string name="iv_pwd6">声纹密码第6位</string>
+    <string name="iv_pwd7">声纹密码第7位</string>
+    <string name="iv_pwd8">声纹密码第8位</string>
+    
+    <!-- Activity标题 -->
+    <string name="title_activity_main">酒店自助入住终端</string>
+    <string name="title_activity_voiceprint">声纹验证</string>
 
     <!-- 测试 -->
     <string name="title_activity_test_voice_service">TestVoiceServiceActivity</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_test_core_service">TestCoreServiceActivity</string>
     <string name="title_activity_test_misc_service">TestMiscServiceActivity</string>
+    <string name="hello_world">Hello world!</string>
+    
+    
 
 </resources>

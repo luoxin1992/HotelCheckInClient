@@ -15,14 +15,14 @@ import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService.VoiceServiceBinder;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService.ThirdPartyServiceBinder;
 
 public class TestThirdPartyServiceActivity extends Activity {
 
 	private TextView tv;
 	private StringBuffer sb = new StringBuffer();
 	private ServiceConnection conn;
-	private VoiceServiceBinder binder;
+	private ThirdPartyServiceBinder binder;
 	private BroadcastReceiver receiver;
 	private String pwd;
 
@@ -66,7 +66,7 @@ public class TestThirdPartyServiceActivity extends Activity {
 
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				binder = (VoiceServiceBinder) service;
+				binder = (ThirdPartyServiceBinder) service;
 				sb.append(name.getClassName());
 				sb.append("服务连接\n");
 				tv.setText(sb.toString());

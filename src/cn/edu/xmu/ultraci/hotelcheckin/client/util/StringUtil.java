@@ -47,4 +47,20 @@ public class StringUtil {
 		}
 	}
 
+	/**
+	 * 字节数组转字符串
+	 * 
+	 * @param bytes
+	 *            字节数组
+	 * @return 字符串
+	 */
+	public static String byte2HexString(byte[] bytes) {
+		String ret = "";
+		if (bytes != null) {
+			for (Byte b : bytes) {
+				ret += String.format("%02X", b.intValue() & 0xFF);
+			}
+		}
+		return ret;
+	}
 }

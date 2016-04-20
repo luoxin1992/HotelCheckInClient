@@ -82,7 +82,7 @@ public class ThirdPartyService extends Service {
 
 	@Override
 	public IBinder onBind(Intent arg0) {
-		return new VoiceServiceBinder();
+		return new ThirdPartyServiceBinder();
 	}
 
 	/**
@@ -113,6 +113,7 @@ public class ThirdPartyService extends Service {
 					Log.e(TAG, String.format(LogTemplate.IFLYTEK_SYNTHESIS_FAIL, arg0.getErrorCode()));
 				} else {
 					Log.i(TAG, LogTemplate.IFLYTEK_SYNTHESIS_OK);
+					SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_SYNTHESIS_OK));
 				}
 			}
 
@@ -262,7 +263,7 @@ public class ThirdPartyService extends Service {
 		// 设置引擎类型
 		mSynthesizer.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
 		// 设置合成发音人
-		mSynthesizer.setParameter(SpeechConstant.VOICE_NAME, "xiaoyan");
+		mSynthesizer.setParameter(SpeechConstant.VOICE_NAME, "xiaoqi");
 		// 设置合成语速
 		mSynthesizer.setParameter(SpeechConstant.SPEED, "50");
 		// 设置合成音调
@@ -390,7 +391,7 @@ public class ThirdPartyService extends Service {
 		SMSSDK.submitVerificationCode("86", mobile, captcha);
 	}
 
-	public class VoiceServiceBinder extends Binder {
+	public class ThirdPartyServiceBinder extends Binder {
 		public String getVoiceprintPassword() {
 			return ThirdPartyService.this.getVoiceprintPassword();
 		}

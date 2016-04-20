@@ -4,7 +4,11 @@ import com.iflytek.cloud.Setting;
 import com.iflytek.cloud.SpeechUtility;
 
 import android.app.Application;
+import android.content.Intent;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Config;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.CoreService;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.MiscService;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService;
 import cn.smssdk.SMSSDK;
 
 /**
@@ -22,5 +26,9 @@ public class AppEntry extends Application {
 		Setting.setShowLog(false);
 		// 初始化掌淘科技短信验证码
 		SMSSDK.initSDK(this, Config.MOB_APP_KEY, Config.MOB_APP_SECRET);
+		// 启动服务
+		startService(new Intent(this, CoreService.class));
+		startService(new Intent(this, MiscService.class));
+		startService(new Intent(this, ThirdPartyService.class));
 	}
 }

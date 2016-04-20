@@ -1,11 +1,9 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -22,6 +20,32 @@ public class SystemUtil {
 	 */
 	public static void sendLocalBroadcast(Context context, Intent broadcast) {
 		LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
+	}
+
+	/**
+	 * 注册应用内广播接收者
+	 * 
+	 * @param context
+	 *            上下文
+	 * @param receiver
+	 *            接收者
+	 * @param filter
+	 *            意图过滤器
+	 */
+	public static void registerLocalBroadcast(Context context, BroadcastReceiver receiver, IntentFilter filter) {
+		LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
+	}
+
+	/**
+	 * 解除注册应用内广播接收者
+	 * 
+	 * @param context
+	 *            上下文
+	 * @param receiver
+	 *            接收者
+	 */
+	public static void unregisterLocalBroadcast(Context context, BroadcastReceiver receiver) {
+		LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
 	}
 
 	/**
@@ -65,26 +89,4 @@ public class SystemUtil {
 		return sp.getString(name, null);
 	}
 
-	/**
-	 * 反射调用服务中的方法
-	 * 
-	 * @param service
-	 *            服务
-	 * @param name
-	 *            方法名
-	 * @param types
-	 *            形参
-	 * @param values
-	 *            实参
-	 * @return 方法返回值
-	 * @throws NoSuchMethodException
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 */
-	public static Object invokeServiceMethod(Service service, String name, Class<?>[] types, Object[] values)
-			throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Method m = service.getClass().getMethod(name, types);
-		return m.invoke(service, values);
-	}
 }

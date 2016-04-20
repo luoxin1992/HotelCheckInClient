@@ -8,6 +8,7 @@ public class Broadcast {
 
 	// 第三方服务广播
 	public static final String IFLYTEK_INIT_FAIL = IFLYTEK_PREFIX + "init.FAIL";
+	public static final String IFLYTEK_SYNTHESIS_OK = IFLYTEK_PREFIX + "synthesis.OK";
 	public static final String IFLYTEK_RECORD_START = IFLYTEK_PREFIX + "record.START";
 	public static final String IFLYTEK_RECORD_END = IFLYTEK_PREFIX + "record.END";
 	public static final String IFLYTEK_RECORD_VOLUME_CHANGE = IFLYTEK_PREFIX + "record.VOLUME_CHANGE";
@@ -50,10 +51,10 @@ public class Broadcast {
 	public static final String CORE_CHECKOUT_NO_CHECKIN = CORE_PREFIX + "checkout.NO_CHECKIN";
 	public static final String CORE_CHECKOUT_NO_SUCH_CARD = CORE_PREFIX + "checkout.NO_SUCH_CARD";
 
-	public static final String CORE_FILE_UPLOAD_OK = CORE_PREFIX+"file.upload.OK";
-	public static final String CORE_FILE_UPLOAD_FAIL = CORE_PREFIX+"file.upload.FAIL";
-	public static final String CORE_FILE_DOWNLOAD_OK = CORE_PREFIX+"file.download.OK";
-	public static final String CORE_FILE_DOWNLOAD_FAIL = CORE_PREFIX+"file.download.FAIL";
+	public static final String CORE_FILE_UPLOAD_OK = CORE_PREFIX + "file.upload.OK";
+	public static final String CORE_FILE_UPLOAD_FAIL = CORE_PREFIX + "file.upload.FAIL";
+	public static final String CORE_FILE_DOWNLOAD_OK = CORE_PREFIX + "file.download.OK";
+	public static final String CORE_FILE_DOWNLOAD_FAIL = CORE_PREFIX + "file.download.FAIL";
 	// 杂项服务广播
 	public static final String MISC_BLUETOOTH_NONSUPPORT = MISC_PREFIX + "bluetooth.NONSUPPORT";
 	public static final String MISC_BLUETOOTH_DISABLE = MISC_PREFIX + "bluetooeh.DISABLE";

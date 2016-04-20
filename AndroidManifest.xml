@@ -34,35 +34,23 @@
         <service android:name=".service.MiscService" >
         </service>
 
+        <!-- 测试3个服务用的界面 -->
         <activity
             android:name=".test.TestCoreServiceActivity"
             android:label="@string/title_activity_test_core_service" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".test.TestVoiceServiceActivity"
             android:label="@string/title_activity_test_voice_service" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".test.TestMiscServiceActivity"
             android:label="@string/title_activity_test_misc_service" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
+
+        <!-- 实际布局 -->
         <activity
-            android:name=".activity.BaseActivity"
+            android:name=".activity.MainActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
             <intent-filter>
@@ -72,7 +60,36 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activity.SwipeCardActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 基本布局 -->
+
+        <activity
+            android:name=".activity.BaseActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
             android:name=".activity.BaseActivityWithoutBottom"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name=".activity.OverlayActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/overlay" >
+        </activity>
+        <activity
+            android:name=".activity.VoiceprintActivity"
+            android:label="@string/title_activity_voiceprint"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
             <intent-filter>

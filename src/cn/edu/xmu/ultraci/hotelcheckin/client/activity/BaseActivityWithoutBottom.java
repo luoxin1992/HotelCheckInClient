@@ -1,68 +1,96 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.TextClock;
 import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 
+/**
+ * 基础布局(无底栏)<br>
+ * <ul>
+ * 顶部:标题&倒计时<br>
+ * 中间:动态填充其他布局<br>
+ * </ul>
+ * 
+ * @author LuoXin
+ *
+ */
 public class BaseActivityWithoutBottom extends Activity {
 
-	private TextClock tcClock;
+	private TextView tvTitle;
 	private TextView tvCountdown;
 	private LinearLayout llMain;
-	private PopupWindow pwTest;
 
-	private Handler handler;
-	private int countdown;
+	private Handler mHandler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_base_without_bottom);
-		initView();
-		setCountdown(60);
 	}
 
-	public void initView() {
-		tcClock = (TextClock) findViewById(R.id.tc_clock);
+	@Override
+	public void onBackPressed() {
+		// 屏蔽系统返回键
+		// super.onBackPressed();
+	}
+
+	public void onSoftBackPressed(View v) {
+		finish();
+	}
+
+	/**
+	 * 用布局填充器动态填充布局
+	 * 
+	 * @param resId
+	 *            布局文件ID
+	 */
+	public void setView(int resId) {
+		tvTitle = (TextView) findViewById(R.id.tv_title);
 		tvCountdown = (TextView) findViewById(R.id.tv_countdown);
 		llMain = (LinearLayout) findViewById(R.id.ll_main);
+
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = inflater.inflate(resId, null);
+		llMain.addView(view);
+
+		tvTitle.setText(getTitle());
 	}
 
 	/**
 	 * 配置界面超时返回<br>
-	 * 0表示永不超时，倒计时区域将显示当前时间
+	 * 0表示永不超时
 	 * 
 	 * @param seconds
 	 *            超时时间
 	 */
-	public void setCountdown(int seconds) {
-		if (seconds == 0) {
-			tcClock.setVisibility(View.VISIBLE);
-			tvCountdown.setVisibility(View.GONE);
-		} else {
-			tcClock.setVisibility(View.GONE);
-			tvCountdown.setVisibility(View.VISIBLE);
-			this.countdown = seconds;
-			handler = new Handler();
-			handler.post(mTicker);
+	public void setTimeout(int seconds) {
+		if (seconds > 0) {
+			mHandler = new Handler();
+			mHandler.post(new Ticker(seconds));
 		}
 	}
 
-	private final Runnable mTicker = new Runnable() {
-		public void run() {
-			tvCountdown.setText((countdown--) + "这里也能点噢");
-			long now = SystemClock.uptimeMillis();
-			long next = now + (1000 - now % 1000);
-			handler.postAtTime(mTicker, next);
+	class Ticker implements Runnable {
+		private int countdown;
+
+		public Ticker(int countdown) {
+			this.countdown = countdown;
 		}
-	};
+
+		@Override
+		public void run() {
+			if ((countdown--) != 0) {
+				tvCountdown.setText(String.valueOf(countdown));
+			} else {
+				finish();
+			}
+			mHandler.postDelayed(this, 1000);
+		}
+	}
 }
