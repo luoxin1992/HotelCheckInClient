@@ -7,5 +7,6 @@
     <string name="title_activity_test_voice_service">TestVoiceServiceActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_test_core_service">TestCoreServiceActivity</string>
+    <string name="title_activity_test_misc_service">TestMiscServiceActivity</string>
 
 </resources>

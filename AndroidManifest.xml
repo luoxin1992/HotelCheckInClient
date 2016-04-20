@@ -53,6 +53,15 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".test.TestMiscServiceActivity"
+            android:label="@string/title_activity_test_misc_service" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activity.BaseActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >

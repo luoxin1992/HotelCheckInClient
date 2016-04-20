@@ -9,17 +9,15 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
-import cn.edu.xmu.ultraci.hotelcheckin.client.constant.MethodName;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService.VoiceServiceBinder;
 
-public class TestVoiceServiceActivity extends Activity {
+public class TestThirdPartyServiceActivity extends Activity {
 
 	private TextView tv;
 	private StringBuffer sb = new StringBuffer();
@@ -31,7 +29,7 @@ public class TestVoiceServiceActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_test_voice_service);
+		setContentView(R.layout.activity_test_third_party_service);
 		tv = (TextView) findViewById(R.id.textView1);
 
 		receiver = new TestVoiceServiceBroadcastReceiver();
@@ -82,11 +80,6 @@ public class TestVoiceServiceActivity extends Activity {
 	}
 
 	public void test1(View v) throws InterruptedException {
-		binder.invokeMethod(MethodName.VOICE_SPEECH_SYNTHESIS, new String[] { "欢迎使用酒店自助入住终端" });
-		SystemClock.sleep(3000);
-		binder.invokeMethod(MethodName.VOICE_SPEECH_SYNTHESIS, new String[] { "骆欣，我们需要验证您的身份。请在听到提示音后朗读屏幕上的数字。" });
-		SystemClock.sleep(5000);
-		binder.invokeMethod(MethodName.VOICE_PLAY_EFFECT, new Integer[] { R.raw.beep });
 	}
 
 	public void test2(View v) {

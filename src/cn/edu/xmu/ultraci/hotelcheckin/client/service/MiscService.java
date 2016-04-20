@@ -2,6 +2,7 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -126,19 +127,24 @@ public class MiscService extends Service {
 	 * 连接打印机
 	 */
 	private void connectPrinter() {
-		BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(Config.BT_MAC);
-		try {
-			mBluetoothsocket = device.createRfcommSocketToServiceRecord(Bluetooth.SPP_UUID);
-			mBluetoothsocket.connect();
-			mOutputStream = mBluetoothsocket.getOutputStream();
-			// 连接成功后发送复位指令
-			sendData2Printer(Bluetooth.PRINTER_CMD[0]);
-			Log.i(TAG, LogTemplate.MISC_PRINTER_CONN_OK);
-		} catch (IOException e) {
-			SystemUtil.sendLocalBroadcast(this, new Intent(Broadcast.MISC_PRINTER_CONN_FAIL));
-			Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_CONN_FAIL, e.getMessage()));
-			disconnectPrinter();
-		}
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(Config.BT_MAC);
+					mBluetoothsocket = device.createRfcommSocketToServiceRecord(Bluetooth.SPP_UUID);
+					mBluetoothsocket.connect();
+					mOutputStream = mBluetoothsocket.getOutputStream();
+					// 连接成功后发送复位指令
+					sendData2Printer(Bluetooth.PRINTER_CMD[0]);
+					Log.i(TAG, LogTemplate.MISC_PRINTER_CONN_OK);
+				} catch (IOException e) {
+					SystemUtil.sendLocalBroadcast(MiscService.this, new Intent(Broadcast.MISC_PRINTER_CONN_FAIL));
+					Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_CONN_FAIL, e.getMessage()));
+					disconnectPrinter();
+				}
+			};
+		}.start();
 	}
 
 	/**
@@ -166,19 +172,15 @@ public class MiscService extends Service {
 	 * @param data
 	 *            数据
 	 */
-	private void sendData2Printer(final byte[] data) {
-		new Thread() {
-			public void run() {
-				try {
-					mOutputStream.write(data);
-				} catch (IOException e) {
-					Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_SEND_FAIL, e.getMessage()));
-					// 与打印机通讯异常时自动重连
-					disconnectPrinter();
-					connectPrinter();
-				}
-			}
-		}.start();
+	private void sendData2Printer(byte[] data) {
+		try {
+			mOutputStream.write(data);
+		} catch (IOException e) {
+			Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_SEND_FAIL, e.getMessage()));
+			// 与打印机通讯异常时自动重连
+			disconnectPrinter();
+			connectPrinter();
+		}
 	}
 
 	/**
@@ -193,67 +195,112 @@ public class MiscService extends Service {
 		if (!text.endsWith("\n")) {
 			text += "\n";
 		}
-		sendData2Printer(text.getBytes());
+		try {
+			// 打印机只支持中文以GBK编码
+			sendData2Printer(text.getBytes("GBK"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
-	 * 以格式1打印<br>
+	 * 以样式1打印<br>
+	 * 标准ASCII字体&字体不放大(级别2)
 	 * 
 	 * @param text
 	 *            要打印的文本
+	 * @param bold
+	 *            加粗字体
 	 */
-	private void printInType1(String text) {
-
+	private void printInType1(final String text, final boolean bold) {
+		new Thread() {
+			@Override
+			public void run() {
+				sendData2Printer(Bluetooth.PRINTER_CMD[1]);
+				sendData2Printer(Bluetooth.PRINTER_CMD[3]);
+				if (bold) {
+					sendData2Printer(Bluetooth.PRINTER_CMD[6]);
+				} else {
+					sendData2Printer(Bluetooth.PRINTER_CMD[5]);
+				}
+				sendData2Printer(text);
+			};
+		}.start();
 	}
 
 	/**
-	 * 以格式2打印<br>
+	 * 以样式2打印<br>
+	 * 标准ASCII字体、宽高加倍(级别4)
 	 * 
 	 * @param text
 	 *            要打印的文本
+	 * @param bold
+	 *            加粗字体
 	 */
-	private void printInType2(String text) {
-
+	private void printInType2(final String text, final boolean bold) {
+		new Thread() {
+			@Override
+			public void run() {
+				sendData2Printer(Bluetooth.PRINTER_CMD[1]);
+				sendData2Printer(Bluetooth.PRINTER_CMD[4]);
+				if (bold) {
+					sendData2Printer(Bluetooth.PRINTER_CMD[6]);
+				} else {
+					sendData2Printer(Bluetooth.PRINTER_CMD[5]);
+				}
+				sendData2Printer(text);
+			};
+		}.start();
 	}
 
 	/**
-	 * 以格式3打印<br>
+	 * 以样式3打印<br>
+	 * 压缩ASCII字体&字体不放大(级别1)
 	 * 
 	 * @param text
 	 *            要打印的文本
+	 * @param bold
+	 *            加粗字体
 	 */
-	private void printInType3(String text) {
-
+	private void printInType3(final String text, final boolean bold) {
+		new Thread() {
+			@Override
+			public void run() {
+				sendData2Printer(Bluetooth.PRINTER_CMD[2]);
+				sendData2Printer(Bluetooth.PRINTER_CMD[3]);
+				if (bold) {
+					sendData2Printer(Bluetooth.PRINTER_CMD[6]);
+				} else {
+					sendData2Printer(Bluetooth.PRINTER_CMD[5]);
+				}
+				sendData2Printer(text);
+			};
+		}.start();
 	}
 
 	/**
-	 * 以格式4打印<br>
+	 * 以样式4打印<br>
+	 * 压缩ASCII字体&宽高加倍(级别3)
 	 * 
 	 * @param text
 	 *            要打印的文本
+	 * @param bold
+	 *            加粗字体
 	 */
-	private void printInType4(String text) {
-
-	}
-
-	/**
-	 * 以格式5打印<br>
-	 * 
-	 * @param text
-	 *            要打印的文本
-	 */
-	private void printInType5(String text) {
-
-	}
-
-	/**
-	 * 以格式6打印<br>
-	 * 
-	 * @param text
-	 *            要打印的文本
-	 */
-	private void printInType6(String text) {
-
+	private void printInType4(final String text, final boolean bold) {
+		new Thread() {
+			@Override
+			public void run() {
+				sendData2Printer(Bluetooth.PRINTER_CMD[2]);
+				sendData2Printer(Bluetooth.PRINTER_CMD[4]);
+				if (bold) {
+					sendData2Printer(Bluetooth.PRINTER_CMD[6]);
+				} else {
+					sendData2Printer(Bluetooth.PRINTER_CMD[5]);
+				}
+				sendData2Printer(text);
+			};
+		}.start();
 	}
 
 	public void playEffect(int resId) {
@@ -273,5 +320,4 @@ public class MiscService extends Service {
 
 		}
 	}
-
 }

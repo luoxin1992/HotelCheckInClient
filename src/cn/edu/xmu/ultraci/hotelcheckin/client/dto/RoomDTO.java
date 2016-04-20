@@ -5,11 +5,20 @@ import java.io.Serializable;
 public class RoomDTO extends BaseDTO implements Serializable {
 	private static final long serialVersionUID = 6044279825051508518L;
 
+	private Integer id;
 	private String name;
 	private String type;
 	private String mobile;
 	private String checkin;
 	private String checkout;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;

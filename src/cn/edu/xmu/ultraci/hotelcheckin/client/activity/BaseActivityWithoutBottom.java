@@ -57,19 +57,6 @@ public class BaseActivityWithoutBottom extends Activity {
 		}
 	}
 
-	public void addView(View v) {
-		View textView = View.inflate(this, R.layout.test_dync_view, null);
-		llMain.addView(textView);
-	}
-
-	@SuppressLint("NewApi")
-	public void popupView(View v) {
-		System.out.println("popup view");
-		View popupView = View.inflate(this, R.layout.test_popup_view, null);
-		pwTest = new PopupWindow(popupView);
-		pwTest.showAsDropDown(llMain, Gravity.CENTER, 0, 0);
-	}
-
 	private final Runnable mTicker = new Runnable() {
 		public void run() {
 			tvCountdown.setText((countdown--) + "这里也能点噢");

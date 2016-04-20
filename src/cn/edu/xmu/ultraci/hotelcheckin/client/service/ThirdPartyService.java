@@ -351,9 +351,11 @@ public class ThirdPartyService extends Service {
 	 * 
 	 * @param mobile
 	 *            手机号
+	 * @return 验证码
 	 */
-	public void sendSMSCaptchaV2(String mobile) {
+	public String sendSMSCaptchaV2(String mobile) {
 		// TODO
+		return null;
 	}
 
 	/**
