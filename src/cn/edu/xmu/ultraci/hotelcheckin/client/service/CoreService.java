@@ -210,6 +210,7 @@ public class CoreService extends Service {
 				case ErrorCode.OK:
 					Log.i(TAG, String.format(LogTemplate.CORE_LOGIN_OK, retModel.getId()));
 					intent = new Intent(Broadcast.CORE_LOGIN_OK);
+					intent.putExtra("no", retModel.getNo());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
@@ -263,6 +264,7 @@ public class CoreService extends Service {
 				case ErrorCode.LOGIN_OUT_NO_PREMISSION:
 					Log.w(TAG, LogTemplate.CORE_LOGOUT_NO_PREMISSION);
 					intent = new Intent(Broadcast.CORE_LOGOUT_NO_PREMISSION);
+					intent.putExtra("no", retModel.getNo());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;

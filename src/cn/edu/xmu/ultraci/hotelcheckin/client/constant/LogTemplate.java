@@ -2,7 +2,7 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.constant;
 
 public class LogTemplate {
 	// 第三方服务日志
-	public static final String THIRDPARTY_SERIVCE_BOUND = "绑定第三方服务成功";
+	public static final String THIRDPARTY_SERIVCE_BOUND = "绑定第三方服务成功(%s)";
 	public static final String THIRDPARTY_SERIVCE_UNBOUND = "解绑第三方服务成功";
 
 	public static final String IFLYTEK_INIT_OK = "科大讯飞SDK初始化成功";
@@ -18,7 +18,7 @@ public class LogTemplate {
 	public static final String MOB_CAPTCHA_UNKNOWN_FAIL = "掌淘SDK未知错误(%s)";
 
 	// 核心服务日志
-	public static final String CORE_SERIVCE_BOUND = "绑定核心服务成功";
+	public static final String CORE_SERIVCE_BOUND = "绑定核心服务成功(%s)";
 	public static final String CORE_SERIVCE_UNBOUND = "解绑核心服务成功";
 
 	public static final String CORE_SERVER_PROCESS_FAIL = "服务端程序错误(%s)";
@@ -53,7 +53,7 @@ public class LogTemplate {
 	public static final String CORE_FILE_DOWNLOAD_FAIL = "文件下载失败(%s)";
 
 	// 杂项服务日志
-	public static final String MISC_SERIVCE_BOUND = "绑定杂项服务成功";
+	public static final String MISC_SERIVCE_BOUND = "绑定杂项服务成功(%s)";
 	public static final String MISC_SERIVCE_UNBOUND = "解绑杂项服务成功";
 
 	public static final String MISC_BLUETOOTH_NONSUPPORT = "不支持蓝牙";

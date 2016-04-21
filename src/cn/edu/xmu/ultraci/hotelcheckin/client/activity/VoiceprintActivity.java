@@ -1,23 +1,16 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.activity;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.MiscService;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.MiscService.MiscServiceBinder;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdpartyService;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdpartyService.ThirdpartyServiceBinder;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
 /**
@@ -28,75 +21,39 @@ public class VoiceprintActivity extends BaseActivity {
 	private ImageView[] ivPwd = new ImageView[8];
 	private ProgressBar pbVolume;
 
-	private ServiceConnection miscConn;
-	private ServiceConnection thirdPartyConn;
-	private MiscServiceBinder miscBinder;
-	private ThirdpartyServiceBinder thirdPartyBinder;
-	private VoiceprintActivityReceiver receiver;
+	private VoiceprintReceiver receiver;
 
-	private String from;
+	private String fromActivity;
+	private String nextActivity;
 	private String uid;
-	private int retry = 0;
+	private String pwd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		initView();
-		initReceiver();
-		bindService();
+		registerReceiver();
+		bindMiscService();
+		bindThirdpartyService();
 
 		// 取来源Activity和要验证的用户ID
-		from = getIntent().getStringExtra("from");
-		from = "init";
+		fromActivity = getIntent().getStringExtra("from");
+		nextActivity = getIntent().getStringExtra("next");
 		uid = getIntent().getStringExtra("uid");
-		uid = "hello2";
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		unbindService(miscConn);
-		unbindService(thirdPartyConn);
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
-	}
-
-	/**
-	 * 绑定到所需服务
-	 */
-	public void bindService() {
-		miscConn = new ServiceConnection() {
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-			}
-
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				miscBinder = (MiscServiceBinder) service;
-			}
-		};
-		thirdPartyConn = new ServiceConnection() {
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-			}
-
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				thirdPartyBinder = (ThirdpartyServiceBinder) service;
-				// 服务绑定成功后即开始验证过程
-				thirdPartyBinder.synthesicSpeech(TTS.VOICEPRINT_VERIFY);
-			}
-		};
-		bindService(new Intent(this, MiscService.class), miscConn, BIND_AUTO_CREATE);
-		bindService(new Intent(this, ThirdpartyService.class), thirdPartyConn, BIND_AUTO_CREATE);
 	}
 
 	/**
 	 * 初始化布局
 	 */
 	public void initView() {
-//		initView(R.layout.activity_voiceprint);
-
+		initView(true, getTitle().toString(), true, 40, R.layout.activity_voiceprint, false);
 		ivPwd[0] = (ImageView) findViewById(R.id.iv_pwd1);
 		ivPwd[1] = (ImageView) findViewById(R.id.iv_pwd2);
 		ivPwd[2] = (ImageView) findViewById(R.id.iv_pwd3);
@@ -111,9 +68,9 @@ public class VoiceprintActivity extends BaseActivity {
 	/**
 	 * 初始化广播
 	 */
-	public void initReceiver() {
-		receiver = new VoiceprintActivityReceiver();
+	public void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
+		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
 		filter.addAction(Broadcast.IFLYTEK_SYNTHESIS_OK);
 		filter.addAction(Broadcast.IFLYTEK_RECORD_START);
 		filter.addAction(Broadcast.IFLYTEK_RECORD_END);
@@ -122,26 +79,16 @@ public class VoiceprintActivity extends BaseActivity {
 		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_VOICE);
 		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_TEXT);
 		filter.addAction(Broadcast.IFLYTEK_VERIFY_FAIL_OTHER);
+		receiver = new VoiceprintReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
 
 	/**
-	 * 进行声纹验证
-	 */
-	public void startVerify() {
-		miscBinder.playEffect(R.raw.beep);
-		String pwd = thirdPartyBinder.getVoiceprintPassword();
-		showPwd(pwd);
-		thirdPartyBinder.verifyVoiceprint(uid, pwd);
-	}
-
-	/**
-	 * 显示声纹密码
+	 * 获取并显示声纹密码
 	 * 
-	 * @param pwd
-	 *            密码
 	 */
-	public void showPwd(String pwd) {
+	public void showPwd() {
+		pwd = getThirdpartyServiceBinder().getVoiceprintPassword();
 		for (int i = 0; i < 8; i++) {
 			switch (pwd.charAt(i)) {
 			case '0':
@@ -178,16 +125,18 @@ public class VoiceprintActivity extends BaseActivity {
 		}
 	}
 
-	class VoiceprintActivityReceiver extends BroadcastReceiver {
+	class VoiceprintReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
+			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
+				showPwd();
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT);
+				break;
 			case Broadcast.IFLYTEK_SYNTHESIS_OK:
 				// 待语音播放完毕后才开始验证过程
-				// 最大验证次数限制为3次
-				if (retry < 3) {
-					startVerify();
-				}
+				getMiscServiceBinder().playEffect(R.raw.beep);
+				getThirdpartyServiceBinder().verifyVoiceprint(uid, pwd);
 				break;
 			case Broadcast.IFLYTEK_RECORD_START:
 				pbVolume.setVisibility(View.VISIBLE);
@@ -199,24 +148,24 @@ public class VoiceprintActivity extends BaseActivity {
 				pbVolume.setProgress(intent.getIntExtra("volume", 0));
 				break;
 			case Broadcast.IFLYTEK_VERIFY_OK:
-				thirdPartyBinder.synthesicSpeech(TTS.VOICEPRINT_VERIFY_OK);
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_OK);
 				// 验证成功后根据来源Activity确定下一个Activity
 				finish();
-				if (from.equals("init")) {
+				if (nextActivity.equals(MainActivity.class.getSimpleName())) {
 					startActivity(new Intent(VoiceprintActivity.this, MainActivity.class));
 				}
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_VOICE:
-				thirdPartyBinder.synthesicSpeech(TTS.VOICEPRINT_VERIFY_FAIL_VOICE);
-				retry++;
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_VOICE);
+				showPwd();
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_TEXT:
-				thirdPartyBinder.synthesicSpeech(TTS.VOICEPRINT_VERIFY_FAIL_TEXT);
-				retry++;
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_TEXT);
+				showPwd();
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_OTHER:
-				thirdPartyBinder.synthesicSpeech(TTS.VOICEPRINT_VERIFY_FAIL_OTHER);
-				retry++;
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_OTHER);
+				showPwd();
 				break;
 			}
 		}

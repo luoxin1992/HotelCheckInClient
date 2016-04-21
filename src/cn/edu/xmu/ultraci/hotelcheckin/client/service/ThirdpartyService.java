@@ -153,6 +153,10 @@ public class ThirdpartyService extends Service {
 				if (arg0.ret == ErrorCode.SUCCESS) {
 					Log.i(TAG, String.format(LogTemplate.IFLYTEK_VERIFY_OK, arg0.vid));
 					SystemUtil.sendLocalBroadcast(ThirdpartyService.this, new Intent(Broadcast.IFLYTEK_VERIFY_OK));
+				} else {
+					Log.e(TAG, String.format(LogTemplate.IFLYTEK_VERIFY_FAIL, arg0.err));
+					SystemUtil.sendLocalBroadcast(ThirdpartyService.this,
+							new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_OTHER));
 				}
 			}
 
