@@ -13,12 +13,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.MiscService;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.MiscService.MiscServiceBinder;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService.ThirdPartyServiceBinder;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdpartyService;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdpartyService.ThirdpartyServiceBinder;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
+/**
+ * 声纹验证界面
+ */
 public class VoiceprintActivity extends BaseActivityWithoutBottom {
 
 	private ImageView[] ivPwd = new ImageView[8];
@@ -27,7 +31,7 @@ public class VoiceprintActivity extends BaseActivityWithoutBottom {
 	private ServiceConnection miscConn;
 	private ServiceConnection thirdPartyConn;
 	private MiscServiceBinder miscBinder;
-	private ThirdPartyServiceBinder thirdPartyBinder;
+	private ThirdpartyServiceBinder thirdPartyBinder;
 	private VoiceprintActivityReceiver receiver;
 
 	private String from;
@@ -78,13 +82,13 @@ public class VoiceprintActivity extends BaseActivityWithoutBottom {
 
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				thirdPartyBinder = (ThirdPartyServiceBinder) service;
+				thirdPartyBinder = (ThirdpartyServiceBinder) service;
 				// 服务绑定成功后即开始验证过程
 				thirdPartyBinder.synthesicSpeech(TTS.VOICEPRINT_VERIFY);
 			}
 		};
 		bindService(new Intent(this, MiscService.class), miscConn, BIND_AUTO_CREATE);
-		bindService(new Intent(this, ThirdPartyService.class), thirdPartyConn, BIND_AUTO_CREATE);
+		bindService(new Intent(this, ThirdpartyService.class), thirdPartyConn, BIND_AUTO_CREATE);
 	}
 
 	/**

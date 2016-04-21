@@ -19,7 +19,7 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.R;
  * @author LuoXin
  *
  */
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity {
 
 	private LinearLayout llMain;
 

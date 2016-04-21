@@ -38,8 +38,8 @@ import cn.smssdk.SMSSDK;
  * @author LuoXin
  *
  */
-public class ThirdPartyService extends Service {
-	private static final String TAG = ThirdPartyService.class.getSimpleName();
+public class ThirdpartyService extends Service {
+	private static final String TAG = ThirdpartyService.class.getSimpleName();
 
 	private InitListener mInitListener;
 	private SpeechSynthesizer mSynthesizer;
@@ -82,7 +82,7 @@ public class ThirdPartyService extends Service {
 
 	@Override
 	public IBinder onBind(Intent arg0) {
-		return new ThirdPartyServiceBinder();
+		return new ThirdpartyServiceBinder();
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class ThirdPartyService extends Service {
 			public void onInit(int errorCode) {
 				if (errorCode != ErrorCode.SUCCESS) {
 					Log.e(TAG, String.format(LogTemplate.IFLYTEK_INIT_FAIL, errorCode));
-					SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_INIT_FAIL));
+					SystemUtil.sendLocalBroadcast(ThirdpartyService.this, new Intent(Broadcast.IFLYTEK_INIT_FAIL));
 				} else {
 					Log.i(TAG, LogTemplate.IFLYTEK_INIT_OK);
 				}
@@ -113,7 +113,7 @@ public class ThirdPartyService extends Service {
 					Log.e(TAG, String.format(LogTemplate.IFLYTEK_SYNTHESIS_FAIL, arg0.getErrorCode()));
 				} else {
 					Log.i(TAG, LogTemplate.IFLYTEK_SYNTHESIS_OK);
-					SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_SYNTHESIS_OK));
+					SystemUtil.sendLocalBroadcast(ThirdpartyService.this, new Intent(Broadcast.IFLYTEK_SYNTHESIS_OK));
 				}
 			}
 
@@ -144,7 +144,7 @@ public class ThirdPartyService extends Service {
 				// 更新音量电平指示器
 				Intent intent = new Intent(Broadcast.IFLYTEK_RECORD_VOLUME_CHANGE);
 				intent.putExtra("volume", arg0);
-				SystemUtil.sendLocalBroadcast(ThirdPartyService.this, intent);
+				SystemUtil.sendLocalBroadcast(ThirdpartyService.this, intent);
 			}
 
 			@Override
@@ -152,7 +152,7 @@ public class ThirdPartyService extends Service {
 				// 处理声纹密码验证结果
 				if (arg0.ret == ErrorCode.SUCCESS) {
 					Log.i(TAG, String.format(LogTemplate.IFLYTEK_VERIFY_OK, arg0.vid));
-					SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_VERIFY_OK));
+					SystemUtil.sendLocalBroadcast(ThirdpartyService.this, new Intent(Broadcast.IFLYTEK_VERIFY_OK));
 				}
 			}
 
@@ -169,17 +169,17 @@ public class ThirdPartyService extends Service {
 					case VerifierResult.MSS_ERROR_IVP_MUCH_NOISE:
 					case VerifierResult.MSS_ERROR_IVP_TOO_LOW:
 					case VerifierResult.MSS_ERROR_IVP_ZERO_AUDIO:
-						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+						SystemUtil.sendLocalBroadcast(ThirdpartyService.this,
 								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_VOICE));
 						break;
 					// 音频内容与给定文本不一致
 					case VerifierResult.MSS_ERROR_IVP_TEXT_NOT_MATCH:
-						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+						SystemUtil.sendLocalBroadcast(ThirdpartyService.this,
 								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_TEXT));
 						break;
 					// 其他错误
 					default:
-						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+						SystemUtil.sendLocalBroadcast(ThirdpartyService.this,
 								new Intent(Broadcast.IFLYTEK_VERIFY_FAIL_OTHER));
 						break;
 					}
@@ -189,13 +189,13 @@ public class ThirdPartyService extends Service {
 			@Override
 			public void onEndOfSpeech() {
 				// 隐藏音量电平指示器
-				SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_RECORD_END));
+				SystemUtil.sendLocalBroadcast(ThirdpartyService.this, new Intent(Broadcast.IFLYTEK_RECORD_END));
 			}
 
 			@Override
 			public void onBeginOfSpeech() {
 				// 显示音量电平指示器
-				SystemUtil.sendLocalBroadcast(ThirdPartyService.this, new Intent(Broadcast.IFLYTEK_RECORD_START));
+				SystemUtil.sendLocalBroadcast(ThirdpartyService.this, new Intent(Broadcast.IFLYTEK_RECORD_START));
 			}
 		};
 		// 创建实例
@@ -222,13 +222,13 @@ public class ThirdPartyService extends Service {
 						break;
 					case SMSSDK.EVENT_GET_VERIFICATION_CODE:
 						// 请求短信验证码
-						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+						SystemUtil.sendLocalBroadcast(ThirdpartyService.this,
 								new Intent(Broadcast.MOB_CAPTCHA_SMS_SEND));
 						Log.i(TAG, LogTemplate.MOB_CAPTCHA_SMS_SEND);
 						break;
 					case SMSSDK.EVENT_GET_VOICE_VERIFICATION_CODE:
 						// 请求语音验证码
-						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+						SystemUtil.sendLocalBroadcast(ThirdpartyService.this,
 								new Intent(Broadcast.MOB_CAPTCHA_VOICE_SEND));
 						Log.i(TAG, LogTemplate.MOB_CAPTCHA_VOICE_SEND);
 						break;
@@ -236,7 +236,7 @@ public class ThirdPartyService extends Service {
 						break;
 					case SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE:
 						// 提交验证码
-						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+						SystemUtil.sendLocalBroadcast(ThirdpartyService.this,
 								new Intent(Broadcast.MOB_CAPTCHA_VERIFY_OK));
 						Log.i(TAG, LogTemplate.MOB_CAPTCHA_VERIFY_OK);
 						break;
@@ -245,7 +245,7 @@ public class ThirdPartyService extends Service {
 					JSONObject err = JSONObject.parseObject(arg2.toString());
 					if (err.containsKey("status") && err.getInteger("status") == 468) {
 						// 官方无文档，暂时只处理验证码错误468
-						SystemUtil.sendLocalBroadcast(ThirdPartyService.this,
+						SystemUtil.sendLocalBroadcast(ThirdpartyService.this,
 								new Intent(Broadcast.MOB_CAPTCHA_VERIFY_FAIL));
 						Log.w(TAG, LogTemplate.MOB_CAPTCHA_VERIFY_FAIL);
 					} else {
@@ -391,33 +391,33 @@ public class ThirdPartyService extends Service {
 		SMSSDK.submitVerificationCode("86", mobile, captcha);
 	}
 
-	public class ThirdPartyServiceBinder extends Binder {
+	public class ThirdpartyServiceBinder extends Binder {
 		public String getVoiceprintPassword() {
-			return ThirdPartyService.this.getVoiceprintPassword();
+			return ThirdpartyService.this.getVoiceprintPassword();
 		}
 
 		public void verifyVoiceprint(String uid, String pwd) {
-			ThirdPartyService.this.verifyVoiceprint(uid, pwd);
+			ThirdpartyService.this.verifyVoiceprint(uid, pwd);
 		}
 
 		public void synthesicSpeech(String text) {
-			ThirdPartyService.this.syntheticSpeech(text);
+			ThirdpartyService.this.syntheticSpeech(text);
 		}
 
 		public void sendSMSCaptchaV2(String mobile) {
-			ThirdPartyService.this.sendSMSCaptchaV2(mobile);
+			ThirdpartyService.this.sendSMSCaptchaV2(mobile);
 		}
 
 		public void sendSMSCaptcha(String mobile) {
-			ThirdPartyService.this.sendSMSCaptcha(mobile);
+			ThirdpartyService.this.sendSMSCaptcha(mobile);
 		}
 
 		public void sendVoiceCaptcha(String mobile) {
-			ThirdPartyService.this.sendVoiceCaptcha(mobile);
+			ThirdpartyService.this.sendVoiceCaptcha(mobile);
 		}
 
 		public void verifyCaptcha(String mobile, String captcha) {
-			ThirdPartyService.this.verifyCaptcha(mobile, captcha);
+			ThirdpartyService.this.verifyCaptcha(mobile, captcha);
 		}
 	}
 

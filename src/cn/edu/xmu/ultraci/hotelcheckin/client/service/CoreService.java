@@ -629,7 +629,6 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, File arg2) {
 				Log.i(TAG, String.format(LogTemplate.CORE_FILE_DOWNLOAD_OK, arg2.getName()));
 				SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_FILE_DOWNLOAD_OK));
-				System.out.println("文件已下载，大小" + arg2.length());
 				// TODO 保存文件和MD5校验
 			}
 		});

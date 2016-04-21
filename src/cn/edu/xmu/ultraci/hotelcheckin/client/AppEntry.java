@@ -8,7 +8,7 @@ import android.content.Intent;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Config;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.CoreService;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.MiscService;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdpartyService;
 import cn.smssdk.SMSSDK;
 
 /**
@@ -29,6 +29,6 @@ public class AppEntry extends Application {
 		// 启动服务
 		startService(new Intent(this, CoreService.class));
 		startService(new Intent(this, MiscService.class));
-		startService(new Intent(this, ThirdPartyService.class));
+		startService(new Intent(this, ThirdpartyService.class));
 	}
 }

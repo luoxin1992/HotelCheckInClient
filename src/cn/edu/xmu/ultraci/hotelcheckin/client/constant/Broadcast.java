@@ -1,12 +1,15 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.constant;
 
 public class Broadcast {
-	private static final String IFLYTEK_PREFIX = "action.thirdparty.iflytek.";
-	private static final String MOB_PREFIX = "action.thirdparty.mob.";
+	private static final String THIRDPARTY_PREFIX = "action.thirdparty.";
+	private static final String IFLYTEK_PREFIX = THIRDPARTY_PREFIX + "iflytek.";
+	private static final String MOB_PREFIX = THIRDPARTY_PREFIX + "mob.";
 	private static final String CORE_PREFIX = "action.core.";
 	private static final String MISC_PREFIX = "action.misc.";
 
 	// 第三方服务广播
+	public static final String THIRDPARTY_SERIVCE_BOUND = THIRDPARTY_PREFIX + "SERVICE_BOUND";
+
 	public static final String IFLYTEK_INIT_FAIL = IFLYTEK_PREFIX + "init.FAIL";
 	public static final String IFLYTEK_SYNTHESIS_OK = IFLYTEK_PREFIX + "synthesis.OK";
 	public static final String IFLYTEK_RECORD_START = IFLYTEK_PREFIX + "record.START";
@@ -23,6 +26,8 @@ public class Broadcast {
 	public static final String MOB_CAPTCHA_VERIFY_FAIL = MOB_PREFIX + "captcha.verify.FAIL";
 
 	// 核心服务广播
+
+	public static final String CORE_SERIVCE_BOUND = CORE_PREFIX + "SERVICE_BOUND";
 
 	public static final String CORE_SERVER_PROCESS_FAIL = CORE_PREFIX + "server.PROCESS_FAIL";
 	public static final String CORE_SERVER_REQUEST_FAIL = CORE_PREFIX + "server.REQUEST_FAIL";
@@ -55,7 +60,10 @@ public class Broadcast {
 	public static final String CORE_FILE_UPLOAD_FAIL = CORE_PREFIX + "file.upload.FAIL";
 	public static final String CORE_FILE_DOWNLOAD_OK = CORE_PREFIX + "file.download.OK";
 	public static final String CORE_FILE_DOWNLOAD_FAIL = CORE_PREFIX + "file.download.FAIL";
+
 	// 杂项服务广播
+	public static final String MISC_SERIVCE_BOUND = MISC_PREFIX + "SERVICE_BOUND";
+
 	public static final String MISC_BLUETOOTH_NONSUPPORT = MISC_PREFIX + "bluetooth.NONSUPPORT";
 	public static final String MISC_BLUETOOTH_DISABLE = MISC_PREFIX + "bluetooeh.DISABLE";
 	public static final String MISC_NFC_NONSUPPORT = MISC_PREFIX + "nfc.NONSUPPORT";

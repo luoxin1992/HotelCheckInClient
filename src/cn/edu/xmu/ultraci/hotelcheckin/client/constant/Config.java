@@ -10,14 +10,14 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.constant;
 public class Config {
 	// 服务端
 	// 美团云
-	// public static final String SERVER_IP = "103.37.165.152";
-	// public static final String SERVER_PORT = "8081";
+	public static final String SERVER_IP = "103.37.165.152";
+	public static final String SERVER_PORT = "8081";
 	// 公寓校园网
 	// public static final String SERVER_IP = "10.30.175.82";
 	// public static final String SERVER_PORT = "9237";
 	// 本部校园网
-	public static final String SERVER_IP = "10.30.172.122";
-	public static final String SERVER_PORT = "9237";
+	// public static final String SERVER_IP = "10.30.172.122";
+	// public static final String SERVER_PORT = "9237";
 	// 实验室
 	// public static final String SERVER_IP = "192.168.1.109";
 	// public static final String SERVER_PORT = "9237";

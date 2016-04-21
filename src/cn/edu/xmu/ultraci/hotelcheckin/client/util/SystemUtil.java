@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.wifi.WifiManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
@@ -87,6 +88,23 @@ public class SystemUtil {
 	public static String getPreferences(Context context, String name) {
 		SharedPreferences sp = context.getSharedPreferences("config", Context.MODE_PRIVATE);
 		return sp.getString(name, null);
+	}
+
+	/**
+	 * 设置SharedPreferences
+	 * 
+	 * @param context
+	 *            上下文
+	 * @param name
+	 *            键
+	 * @param value
+	 *            值
+	 */
+	public static void setPreferences(Context context, String name, String value) {
+		SharedPreferences sp = context.getSharedPreferences("config", Context.MODE_PRIVATE);
+		Editor editor = sp.edit();
+		editor.putString(name, value);
+		editor.commit();
 	}
 
 }

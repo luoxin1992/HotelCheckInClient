@@ -14,15 +14,15 @@ import android.view.View;
 import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService;
-import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdPartyService.ThirdPartyServiceBinder;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdpartyService;
+import cn.edu.xmu.ultraci.hotelcheckin.client.service.ThirdpartyService.ThirdpartyServiceBinder;
 
 public class TestThirdPartyServiceActivity extends Activity {
 
 	private TextView tv;
 	private StringBuffer sb = new StringBuffer();
 	private ServiceConnection conn;
-	private ThirdPartyServiceBinder binder;
+	private ThirdpartyServiceBinder binder;
 	private BroadcastReceiver receiver;
 	private String pwd;
 
@@ -55,7 +55,7 @@ public class TestThirdPartyServiceActivity extends Activity {
 	}
 
 	public void conn(View v) {
-		Intent service = new Intent(this, ThirdPartyService.class);
+		Intent service = new Intent(this, ThirdpartyService.class);
 		conn = new ServiceConnection() {
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
@@ -66,7 +66,7 @@ public class TestThirdPartyServiceActivity extends Activity {
 
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				binder = (ThirdPartyServiceBinder) service;
+				binder = (ThirdpartyServiceBinder) service;
 				sb.append(name.getClassName());
 				sb.append("服务连接\n");
 				tv.setText(sb.toString());

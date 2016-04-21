@@ -20,7 +20,7 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.R;
  * @author LuoXin
  *
  */
-public class BaseActivityWithoutBottom extends Activity {
+public abstract class BaseActivityWithoutBottom extends Activity {
 
 	private TextView tvTitle;
 	private TextView tvCountdown;
