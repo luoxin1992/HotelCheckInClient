@@ -21,6 +21,7 @@
     <!-- Activity标题 -->
     <string name="title_activity_init">初始化界面</string>
     <string name="title_activity_main">主界面</string>
+    <string name="title_activity_swipe_card">刷卡界面</string>
     <string name="title_activity_voiceprint">声纹验证界面</string>
     <string name="title_activity_select_time">选时间界面</string>
     <string name="title_activity_select_room">选房间界面</string>

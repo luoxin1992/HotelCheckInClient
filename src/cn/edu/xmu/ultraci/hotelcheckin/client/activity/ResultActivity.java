@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * 结果界面
  */
-public class ResultActivity extends BaseActivityWithoutBottom {
+public class ResultActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  *散客登记界面
  */
-public class GuestActivity extends BaseActivityWithoutBottom {
+public class GuestActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

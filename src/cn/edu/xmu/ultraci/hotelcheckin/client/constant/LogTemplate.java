@@ -2,6 +2,9 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.constant;
 
 public class LogTemplate {
 	// 第三方服务日志
+	public static final String THIRDPARTY_SERIVCE_BOUND = "绑定第三方服务成功";
+	public static final String THIRDPARTY_SERIVCE_UNBOUND = "解绑第三方服务成功";
+
 	public static final String IFLYTEK_INIT_OK = "科大讯飞SDK初始化成功";
 	public static final String IFLYTEK_INIT_FAIL = "科大讯飞SDK初始化失败(%s)";
 	public static final String IFLYTEK_SYNTHESIS_OK = "合成语音播放成功";
@@ -13,7 +16,11 @@ public class LogTemplate {
 	public static final String MOB_CAPTCHA_VERIFY_OK = "验证码校验成功";
 	public static final String MOB_CAPTCHA_VERIFY_FAIL = "验证码校验失败";
 	public static final String MOB_CAPTCHA_UNKNOWN_FAIL = "掌淘SDK未知错误(%s)";
+
 	// 核心服务日志
+	public static final String CORE_SERIVCE_BOUND = "绑定核心服务成功";
+	public static final String CORE_SERIVCE_UNBOUND = "解绑核心服务成功";
+
 	public static final String CORE_SERVER_PROCESS_FAIL = "服务端程序错误(%s)";
 	public static final String CORE_SERVER_REQUEST_FAIL = "服务端请求失败(%s)";
 	public static final String CORE_INIT_OK = "系统初始化成功";
@@ -39,13 +46,16 @@ public class LogTemplate {
 	public static final String CORE_CHECKOUT_NEED_PAY = "办理退房手续失败(房间存在欠费)";
 	public static final String CORE_CHECKOUT_NO_CHECKIN = "办理退房手续失败(房间未入住)";
 	public static final String CORE_CHECKOUT_NO_SUCH_CARD = "办理退房手续失败(无此房间)";
-	
+
 	public static final String CORE_FILE_UPLOAD_OK = "文件上传成功(%s)";
 	public static final String CORE_FILE_UPLOAD_FAIL = "文件上传失败(%s)";
 	public static final String CORE_FILE_DOWNLOAD_OK = "文件下载成功(%s)";
 	public static final String CORE_FILE_DOWNLOAD_FAIL = "文件下载失败(%s)";
 
 	// 杂项服务日志
+	public static final String MISC_SERIVCE_BOUND = "绑定杂项服务成功";
+	public static final String MISC_SERIVCE_UNBOUND = "解绑杂项服务成功";
+
 	public static final String MISC_BLUETOOTH_NONSUPPORT = "不支持蓝牙";
 	public static final String MISC_BLUETOOTH_DISABLE = "蓝牙未启用";
 	public static final String MISC_BLUETOOTH_OK = "蓝牙正常";

@@ -15,7 +15,7 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.util.StringUtil;
  * 刷卡界面
  *
  */
-public class SwipeCardActivity extends BaseActivityWithoutBottom {
+public class SwipeCardActivity extends BaseActivity {
 
 	private NfcAdapter mAdapter;
 	private PendingIntent mPendingIntent;
@@ -30,8 +30,7 @@ public class SwipeCardActivity extends BaseActivityWithoutBottom {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setView(R.layout.activity_swipe_card);
-		setTimeout(15);
+//		initView(R.layout.activity_swipe_card);
 
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
 		mPendingIntent = PendingIntent.getActivity(this, 0,

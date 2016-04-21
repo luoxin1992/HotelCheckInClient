@@ -26,7 +26,6 @@ public class Broadcast {
 	public static final String MOB_CAPTCHA_VERIFY_FAIL = MOB_PREFIX + "captcha.verify.FAIL";
 
 	// 核心服务广播
-
 	public static final String CORE_SERIVCE_BOUND = CORE_PREFIX + "SERVICE_BOUND";
 
 	public static final String CORE_SERVER_PROCESS_FAIL = CORE_PREFIX + "server.PROCESS_FAIL";

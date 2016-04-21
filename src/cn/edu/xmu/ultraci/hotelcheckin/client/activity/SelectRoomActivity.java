@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * 选房间界面
  */
-public class SelectRoomActivity extends BaseActivityWithoutBottom {
+public class SelectRoomActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

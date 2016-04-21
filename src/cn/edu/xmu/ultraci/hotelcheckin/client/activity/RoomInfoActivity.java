@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * 房间信息界面
  */
-public class RoomInfoActivity extends BaseActivityWithoutBottom {
+public class RoomInfoActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

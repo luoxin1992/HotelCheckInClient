@@ -19,7 +19,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	public void initView(int resId) {
-		super.initView(R.layout.activity_main);
+//		super.initView(R.layout.activity_main);
 		tvNotice = (TextView) findViewById(R.id.tv_notice);
 		tvNotice.setText(SystemUtil.getPreferences(this, "notice"));
 	}

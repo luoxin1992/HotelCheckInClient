@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * 选时间界面
  */
-public class SelectTimeActivity extends BaseActivityWithoutBottom {
+public class SelectTimeActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

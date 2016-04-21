@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * 拍摄身份证界面
  */
-public class CaptureIdCardActivity extends BaseActivityWithoutBottom {
+public class CaptureIdCardActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * 支付界面
  */
-public class PayActivity extends BaseActivityWithoutBottom {
+public class PayActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

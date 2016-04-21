@@ -23,7 +23,7 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 /**
  * 声纹验证界面
  */
-public class VoiceprintActivity extends BaseActivityWithoutBottom {
+public class VoiceprintActivity extends BaseActivity {
 
 	private ImageView[] ivPwd = new ImageView[8];
 	private ProgressBar pbVolume;
@@ -95,7 +95,7 @@ public class VoiceprintActivity extends BaseActivityWithoutBottom {
 	 * 初始化布局
 	 */
 	public void initView() {
-		setView(R.layout.activity_voiceprint);
+//		initView(R.layout.activity_voiceprint);
 
 		ivPwd[0] = (ImageView) findViewById(R.id.iv_pwd1);
 		ivPwd[1] = (ImageView) findViewById(R.id.iv_pwd2);
