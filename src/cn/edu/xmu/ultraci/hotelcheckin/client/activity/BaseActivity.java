@@ -32,21 +32,18 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
  * 顶部：返回软键&标题&时钟&倒计时<br>
  * 中间：动态填充其他布局<br>
  * 底部：系统公告<br>
+ * 其他：加载提示框&出错提示框
  * </ul>
  * 
  * @author LuoXin
  *
  */
+/**
+ * @author LuoXin
+ *
+ */
 public abstract class BaseActivity extends Activity {
 	private static final String TAG = BaseActivity.class.getSimpleName();
-
-	private ImageButton ibBack;
-	private TextView tvTitle;
-	private TextClock tcClock;
-	private TextView tvCountdown;
-	private LinearLayout llMain;
-	private LinearLayout llBottom;
-	private TextView tvNotice;
 
 	private Handler mHandler;
 
@@ -58,6 +55,14 @@ public abstract class BaseActivity extends Activity {
 	private MiscServiceBinder mMiscServBinder;
 	private ThirdpartyServiceBinder mThirdpartyServBinder;
 
+	private ImageButton ibBack;
+	private TextView tvTitle;
+	private TextClock tcClock;
+	private TextView tvCountdown;
+	private LinearLayout llMain;
+	private LinearLayout llBottom;
+	private TextView tvNotice;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -67,7 +72,6 @@ public abstract class BaseActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		unbindService();
 	}
 
 	/**
@@ -250,6 +254,27 @@ public abstract class BaseActivity extends Activity {
 	 */
 	public ThirdpartyServiceBinder getThirdpartyServiceBinder() {
 		return mThirdpartyServBinder;
+	}
+
+	/**
+	 * 显示出错提示框
+	 */
+	public void showErrorDialog() {
+
+	}
+
+	/**
+	 * 显示加载提示框
+	 */
+	public void showProcessDialog() {
+
+	}
+
+	/**
+	 * 隐藏加载提示框
+	 */
+	public void dismissProcessDialog() {
+
 	}
 
 	/**

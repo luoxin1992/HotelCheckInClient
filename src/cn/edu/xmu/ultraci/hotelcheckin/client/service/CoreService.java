@@ -466,7 +466,7 @@ public class CoreService extends Service {
 	 */
 	public void guest(final String mobile, String idcard) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.NEW_GUEST);
+		addCommonParams(params, Action.GUEST);
 		params.put("mobile", mobile);
 		params.put("idcard", idcard);
 		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
@@ -603,7 +603,9 @@ public class CoreService extends Service {
 				FileUploadDTO retModel = JSON.parseObject(new String(arg2), FileUploadDTO.class);
 				if (retModel.getResult() == ErrorCode.OK) {
 					Log.i(TAG, String.format(LogTemplate.CORE_FILE_UPLOAD_OK, retModel.getFilename()));
-					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_FILE_UPLOAD_OK));
+					Intent intent = new Intent(Broadcast.CORE_FILE_UPLOAD_OK);
+					intent.putExtra("filename", retModel.getFilename());
+					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 				} else {
 					onServerFailure(retModel.getResult());
 				}

@@ -14,13 +14,20 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
  * 初始化界面
  */
 public class InitActivity extends BaseActivity {
+	private static final String TAG = InitActivity.class.getSimpleName();
 
 	private InitReceiver receiver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		initView(false, null, false, 0, R.layout.activity_init, false);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
 
 		registerReceiver();
 		bindCoreService();
@@ -28,18 +35,25 @@ public class InitActivity extends BaseActivity {
 	}
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+
+		unbindService();
+		SystemUtil.unregisterLocalBroadcast(this, receiver);
+	}
+
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		SystemUtil.unregisterLocalBroadcast(this, receiver);
 	}
 
 	public void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Broadcast.CORE_SERIVCE_BOUND);
-		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
-		filter.addAction(Broadcast.CORE_INIT_OK);
 		filter.addAction(Broadcast.CORE_SERVER_REQUEST_FAIL);
 		filter.addAction(Broadcast.CORE_SERVER_PROCESS_FAIL);
+		filter.addAction(Broadcast.CORE_INIT_OK);
+		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
 		receiver = new InitReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
@@ -56,12 +70,12 @@ public class InitActivity extends BaseActivity {
 				getCoreServiceBinder().init();
 				break;
 			case Broadcast.CORE_INIT_OK:
-				finish();
 				newIntent = new Intent(InitActivity.this, SwipeCardActivity.class);
 				newIntent.putExtra("from", InitActivity.class.getSimpleName());
 				newIntent.putExtra("next", VoiceprintActivity.class.getSimpleName());
 				SystemUtil.setPreferences(InitActivity.this, "notice", intent.getStringExtra("notice"));
 				startActivity(newIntent);
+				finish();
 				break;
 			case Broadcast.CORE_SERVER_REQUEST_FAIL:
 			case Broadcast.CORE_SERVER_PROCESS_FAIL:

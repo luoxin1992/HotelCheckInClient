@@ -26,5 +26,8 @@ public class TTS {
 	public static final String VOICEPRINT_FAIL_OTHER = "验证失败。";
 	public static final String VOICEPRINT_RETRY = "让我们再试一次。";
 	public static final String VOICEPRINT_LIMITED = "验证次数已超过限制。";
+	
+	//拍摄身份证界面
+	public static final String CAPTURE_ID_CARD = "请将您的身份证放置在拍摄区域内，然后点击屏幕完成拍照。";
 
 }

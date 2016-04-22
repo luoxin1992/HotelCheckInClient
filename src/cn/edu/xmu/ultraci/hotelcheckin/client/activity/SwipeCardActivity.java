@@ -20,6 +20,7 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
  *
  */
 public class SwipeCardActivity extends BaseActivity {
+	private static final String TAG = SwipeCardActivity.class.getSimpleName();
 
 	private SwipeCardReceiver receiver;
 
@@ -28,9 +29,7 @@ public class SwipeCardActivity extends BaseActivity {
 	private IntentFilter[] mFilters;
 	private String[][] mTechLists;
 
-	// 记录卡验证通过后去往哪个界面
-	private String fromActivity;
-	private String nextActivity;
+	private String action;
 	private String cardid;
 
 	@Override
@@ -38,26 +37,30 @@ public class SwipeCardActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		initView(true, getTitle().toString(), true, 20, R.layout.activity_swipe_card, false);
-		registerReceiver();
 
-		bindCoreService();
-		bindMiscService();
-		bindThirdpartyService();
-
-		fromActivity = getIntent().getStringExtra("from");
-		nextActivity = getIntent().getStringExtra("next");
+		action = getIntent().getStringExtra("action");
 
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
 		mPendingIntent = PendingIntent.getActivity(this, 0,
 				new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		mFilters = new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED) };
 		mTechLists = new String[][] { new String[] { NfcA.class.getName() } };
+	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		registerReceiver();
+		bindCoreService();
+		bindMiscService();
+		bindThirdpartyService();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+
 		if (mAdapter != null) {
 			mAdapter.enableForegroundDispatch(this, mPendingIntent, mFilters, mTechLists);
 		}
@@ -66,9 +69,13 @@ public class SwipeCardActivity extends BaseActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+
 		if (mAdapter != null) {
 			mAdapter.disableForegroundDispatch(this);
 		}
+
+		SystemUtil.unregisterLocalBroadcast(this, receiver);
+		unbindService();
 	}
 
 	@Override

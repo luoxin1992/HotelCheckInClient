@@ -17,52 +17,47 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
  * 声纹验证界面
  */
 public class VoiceprintActivity extends BaseActivity {
-
-	private ImageView[] ivPwd = new ImageView[8];
-	private ProgressBar pbVolume;
+	private static final String TAG = VoiceprintActivity.class.getSimpleName();
 
 	private VoiceprintReceiver receiver;
 
-	private String fromActivity;
-	private String nextActivity;
+	private String action;
 	private String uid;
 	private String pwd;
+
+	private ImageView[] ivPwd = new ImageView[8];
+	private ProgressBar pbVolume;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		action = getIntent().getStringExtra("action");
+		uid = getIntent().getStringExtra("uid");
+
 		initView();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
 		registerReceiver();
 		bindMiscService();
 		bindThirdpartyService();
+	}
 
-		// 取来源Activity和要验证的用户ID
-		fromActivity = getIntent().getStringExtra("from");
-		nextActivity = getIntent().getStringExtra("next");
-		uid = getIntent().getStringExtra("uid");
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		unbindService();
+		SystemUtil.unregisterLocalBroadcast(this, receiver);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		SystemUtil.unregisterLocalBroadcast(this, receiver);
-	}
-
-	/**
-	 * 初始化布局
-	 */
-	public void initView() {
-		initView(true, getTitle().toString(), true, 40, R.layout.activity_voiceprint, false);
-		ivPwd[0] = (ImageView) findViewById(R.id.iv_pwd1);
-		ivPwd[1] = (ImageView) findViewById(R.id.iv_pwd2);
-		ivPwd[2] = (ImageView) findViewById(R.id.iv_pwd3);
-		ivPwd[3] = (ImageView) findViewById(R.id.iv_pwd4);
-		ivPwd[4] = (ImageView) findViewById(R.id.iv_pwd5);
-		ivPwd[5] = (ImageView) findViewById(R.id.iv_pwd6);
-		ivPwd[6] = (ImageView) findViewById(R.id.iv_pwd7);
-		ivPwd[7] = (ImageView) findViewById(R.id.iv_pwd8);
-		pbVolume = (ProgressBar) findViewById(R.id.pb_volume);
 	}
 
 	/**
@@ -84,8 +79,24 @@ public class VoiceprintActivity extends BaseActivity {
 	}
 
 	/**
+	 * 初始化布局
+	 */
+	public void initView() {
+		initView(true, getTitle().toString(), true, 40, R.layout.activity_voiceprint, false);
+		
+		ivPwd[0] = (ImageView) findViewById(R.id.iv_pwd1);
+		ivPwd[1] = (ImageView) findViewById(R.id.iv_pwd2);
+		ivPwd[2] = (ImageView) findViewById(R.id.iv_pwd3);
+		ivPwd[3] = (ImageView) findViewById(R.id.iv_pwd4);
+		ivPwd[4] = (ImageView) findViewById(R.id.iv_pwd5);
+		ivPwd[5] = (ImageView) findViewById(R.id.iv_pwd6);
+		ivPwd[6] = (ImageView) findViewById(R.id.iv_pwd7);
+		ivPwd[7] = (ImageView) findViewById(R.id.iv_pwd8);
+		pbVolume = (ProgressBar) findViewById(R.id.pb_volume);
+	}
+
+	/**
 	 * 获取并显示声纹密码
-	 * 
 	 */
 	public void showPwd() {
 		pwd = getThirdpartyServiceBinder().getVoiceprintPassword();

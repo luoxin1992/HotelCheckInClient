@@ -16,8 +16,9 @@ public class Action {
 	public static final String QUERY_ROOM = "room";
 	public static final String QUERY_INFO = "info";
 	// 房务类
-	public static final String NEW_GUEST = "guest";
+	public static final String GUEST = "guest";
 	public static final String CHECKIN = "checkin";
+	public static final String EXTENSION = "extension";
 	public static final String CHECKOUT = "checkout";
 	@Deprecated
 	public static final String PAY_RESULT = "pay";
