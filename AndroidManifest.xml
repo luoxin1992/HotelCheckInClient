@@ -24,7 +24,7 @@
     <application
         android:name=".AppEntry"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <service android:name=".service.ThirdpartyService" >
@@ -34,7 +34,7 @@
         <service android:name=".service.MiscService" >
         </service>
 
-        <!-- 测试3个服务用的界面 -->
+        <!-- 测试用界面 -->
         <activity
             android:name=".test.TestCoreServiceActivity"
             android:label="@string/title_activity_test_core_service" >
@@ -48,7 +48,7 @@
             android:label="@string/title_activity_test_misc_service" >
         </activity>
 
-        <!-- 基本布局 -->
+        <!-- 基础布局 -->
 
         <activity
             android:name=".activity.BaseActivity"
@@ -59,7 +59,6 @@
         <!-- 实际布局 -->
         <activity
             android:name=".activity.MainActivity"
-            android:label="@string/title_activity_main"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
         </activity>
@@ -77,7 +76,7 @@
         </activity>
         <activity
             android:name=".activity.InitActivity"
-            android:label="@string/title_activity_init"
+            android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
             <intent-filter>
@@ -94,19 +93,19 @@
         </activity>
         <activity
             android:name=".activity.SelectRoomActivity"
-            android:label="@string/title_activity_pay"
+            android:label="@string/title_activity_select_room"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".activity.ResultActivity"
-            android:label="@string/title_activity_pay"
+            android:name=".activity.AboutActivity"
+            android:label="@string/title_activity_about"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
         </activity>
         <activity
             android:name=".activity.PayActivity"
-            android:label="@string/title_activity_result"
+            android:label="@string/title_activity_pay"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
         </activity>
@@ -125,6 +124,11 @@
         <activity
             android:name=".activity.RoomInfoActivity"
             android:label="@string/title_activity_room_info"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name=".activity.ServerCrashActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
         </activity>

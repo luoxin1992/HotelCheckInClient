@@ -25,10 +25,10 @@ public class StringUtil {
 	 * @return
 	 */
 	public static boolean isUsername(String str) {
-		if (str.matches("[a-zA-Z][a-zA-Z0-9_]{5,17}")) {
-			return true;
-		} else {
+		if (str == null || !str.matches("[a-zA-Z][a-zA-Z0-9_]{5,17}")) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -40,10 +40,10 @@ public class StringUtil {
 	 * @return 判断结果
 	 */
 	public static boolean isNumeric(String str) {
-		if (str.matches("\\d+")) {
-			return true;
-		} else {
+		if (str == null || !str.matches("\\d+")) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 

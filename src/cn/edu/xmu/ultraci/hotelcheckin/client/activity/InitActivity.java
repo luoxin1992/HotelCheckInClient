@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
@@ -22,7 +23,7 @@ public class InitActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initView(false, null, false, 0, R.layout.activity_init, false);
+		initView();
 	}
 
 	@Override
@@ -58,21 +59,24 @@ public class InitActivity extends BaseActivity {
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
 
+	public void initView() {
+		setContent(false, null, false, 0, R.layout.activity_init, false);
+	}
+
 	class InitReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Intent newIntent;
 			switch (intent.getAction()) {
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.INIT_WELCOME);
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.WELCOME);
 				break;
 			case Broadcast.CORE_SERIVCE_BOUND:
 				getCoreServiceBinder().init();
 				break;
 			case Broadcast.CORE_INIT_OK:
 				newIntent = new Intent(InitActivity.this, SwipeCardActivity.class);
-				newIntent.putExtra("from", InitActivity.class.getSimpleName());
-				newIntent.putExtra("next", VoiceprintActivity.class.getSimpleName());
+				newIntent.putExtra("action", Action.CLIENT_LOGIN);
 				SystemUtil.setPreferences(InitActivity.this, "notice", intent.getStringExtra("notice"));
 				startActivity(newIntent);
 				finish();

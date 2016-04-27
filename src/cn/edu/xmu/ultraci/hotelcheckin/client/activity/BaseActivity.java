@@ -96,15 +96,15 @@ public abstract class BaseActivity extends Activity {
 	 * @param title
 	 *            界面标题
 	 * @param hasCountdown
-	 *            是否有倒计时
+	 *            是否显示倒计时
 	 * @param countdown
-	 *            倒计时时间
+	 *            界面超时，0为不超时
 	 * @param resId
 	 *            布局文件ID
 	 * @param hasBottom
 	 *            是否有底栏
 	 */
-	public void initView(boolean hasBackKey, String title, boolean hasCountdown, int countdown, int resId,
+	public void setContent(boolean hasBackKey, String title, boolean hasCountdown, int countdown, int resId,
 			boolean hasBottom) {
 		ibBack = (ImageButton) findViewById(R.id.ib_back);
 		tvTitle = (TextView) findViewById(R.id.tv_title);
@@ -138,7 +138,8 @@ public abstract class BaseActivity extends Activity {
 		// 设置隐藏底栏并扩大中间部分
 		if (!hasBottom) {
 			llBottom.setVisibility(View.GONE);
-			llMain.setWeightSum((float) (8.0 / 9.0));
+			// 当前比例配置为顶栏1/9，中间7/9，底栏1/9
+			// llMain.setWeightSum((float) (8.0 / 9.0));
 		} else {
 			tvNotice.setText(SystemUtil.getPreferences(this, "notice"));
 		}
@@ -160,7 +161,7 @@ public abstract class BaseActivity extends Activity {
 
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				Log.i(TAG, String.format(LogTemplate.CORE_SERIVCE_BOUND, name.getClassName()));
+				Log.i(TAG, LogTemplate.CORE_SERIVCE_BOUND);
 				mCoreServBinder = (CoreServiceBinder) service;
 				SystemUtil.sendLocalBroadcast(BaseActivity.this, new Intent(Broadcast.CORE_SERIVCE_BOUND));
 			}
@@ -180,7 +181,7 @@ public abstract class BaseActivity extends Activity {
 
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				Log.i(TAG, String.format(LogTemplate.MISC_SERIVCE_BOUND, name.getClassName()));
+				Log.i(TAG, LogTemplate.MISC_SERIVCE_BOUND);
 				mMiscServBinder = (MiscServiceBinder) service;
 				SystemUtil.sendLocalBroadcast(BaseActivity.this, new Intent(Broadcast.MISC_SERIVCE_BOUND));
 			}
@@ -200,7 +201,7 @@ public abstract class BaseActivity extends Activity {
 
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				Log.i(TAG, String.format(LogTemplate.THIRDPARTY_SERIVCE_BOUND, name.getClassName()));
+				Log.i(TAG, LogTemplate.THIRDPARTY_SERIVCE_BOUND);
 				mThirdpartyServBinder = (ThirdpartyServiceBinder) service;
 				SystemUtil.sendLocalBroadcast(BaseActivity.this, new Intent(Broadcast.THIRDPARTY_SERIVCE_BOUND));
 			}

@@ -11,13 +11,13 @@ import java.io.Serializable;
 public class GuestDTO extends BaseDTO implements Serializable {
 	private static final long serialVersionUID = 587146328734289460L;
 
-	private Long id;
+	private Integer id;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

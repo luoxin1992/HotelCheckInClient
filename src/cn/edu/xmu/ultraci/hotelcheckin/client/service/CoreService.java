@@ -21,7 +21,6 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Config;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.ErrorCode;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.LogTemplate;
-import cn.edu.xmu.ultraci.hotelcheckin.client.constant.URL;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.CheckinDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.CheckoutDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.FileUploadDTO;
@@ -132,8 +131,8 @@ public class CoreService extends Service {
 	 */
 	public void heartbeat() {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.HEARTBEAT);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		addCommonParams(params, Action.SERVER_HEARTBEAT);
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -157,8 +156,8 @@ public class CoreService extends Service {
 	 */
 	public void init() {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.INIT);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		addCommonParams(params, Action.SERVER_INIT);
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -191,11 +190,11 @@ public class CoreService extends Service {
 	 * @param cardid
 	 *            员工卡号
 	 */
-	public void login(String cardid) {
+	public void login(final String cardid) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.LOGIN);
+		addCommonParams(params, Action.SERVER_LOGIN);
 		params.put("cardid", cardid);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -208,20 +207,21 @@ public class CoreService extends Service {
 				Intent intent;
 				switch (retModel.getResult()) {
 				case ErrorCode.OK:
-					Log.i(TAG, String.format(LogTemplate.CORE_LOGIN_OK, retModel.getId()));
+					Log.i(TAG, String.format(LogTemplate.CORE_LOGIN_OK, cardid));
 					intent = new Intent(Broadcast.CORE_LOGIN_OK);
-					intent.putExtra("no", retModel.getNo());
+					intent.putExtra("id", retModel.getId());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				case ErrorCode.LOGIN_OUT_NO_PREMISSION:
-					Log.w(TAG, LogTemplate.CORE_LOGIN_NO_PREMISSION);
+					Log.w(TAG, String.format(LogTemplate.CORE_LOGIN_NO_PREMISSION, cardid));
 					intent = new Intent(Broadcast.CORE_LOGIN_NO_PREMISSION);
+					intent.putExtra("id", retModel.getId());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				case ErrorCode.LOGIN_OUT_NO_SUCH_CARD:
-					Log.w(TAG, LogTemplate.CORE_LOGIN_NO_SUCH_CARD);
+					Log.w(TAG, String.format(LogTemplate.CORE_LOGIN_NO_SUCH_CARD, cardid));
 					intent = new Intent(Broadcast.CORE_LOGIN_NO_SUCH_CARD);
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
@@ -239,11 +239,11 @@ public class CoreService extends Service {
 	 * @param cardid
 	 *            员工卡号
 	 */
-	public void logout(String cardid) {
+	public void logout(final String cardid) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.LOGOUT);
+		addCommonParams(params, Action.SERVER_LOGOUT);
 		params.put("cardid", cardid);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -256,20 +256,21 @@ public class CoreService extends Service {
 				Intent intent;
 				switch (retModel.getResult()) {
 				case ErrorCode.OK:
-					Log.i(TAG, String.format(LogTemplate.CORE_LOGOUT_OK, retModel.getId()));
+					Log.i(TAG, String.format(LogTemplate.CORE_LOGOUT_OK, cardid));
 					intent = new Intent(Broadcast.CORE_LOGOUT_OK);
+					intent.putExtra("id", retModel.getId());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				case ErrorCode.LOGIN_OUT_NO_PREMISSION:
-					Log.w(TAG, LogTemplate.CORE_LOGOUT_NO_PREMISSION);
+					Log.w(TAG, String.format(LogTemplate.CORE_LOGOUT_NO_PREMISSION, cardid));
 					intent = new Intent(Broadcast.CORE_LOGOUT_NO_PREMISSION);
-					intent.putExtra("no", retModel.getNo());
+					intent.putExtra("id", retModel.getId());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				case ErrorCode.LOGIN_OUT_NO_SUCH_CARD:
-					Log.w(TAG, LogTemplate.CORE_LOGOUT_NO_SUCH_CARD);
+					Log.w(TAG, String.format(LogTemplate.CORE_LOGOUT_NO_SUCH_CARD, cardid));
 					intent = new Intent(Broadcast.CORE_LOGOUT_NO_SUCH_CARD);
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
@@ -287,11 +288,11 @@ public class CoreService extends Service {
 	 * @param cardid
 	 *            会员卡号
 	 */
-	public void member(String cardid) {
+	public void member(final String cardid) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.QUERY_MEMBER);
+		addCommonParams(params, Action.SERVER_QUERY_MEMBER);
 		params.put("cardid", cardid);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -303,14 +304,14 @@ public class CoreService extends Service {
 				MemberDTO retModel = JSON.parseObject(new String(arg2), MemberDTO.class);
 				switch (retModel.getResult()) {
 				case ErrorCode.OK:
-					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_MEMBER_OK, retModel.getId()));
+					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_MEMBER_OK, cardid));
 					// 查询类服务返回模型较复杂，直接转发到表现层，下同
 					Intent intent = new Intent(Broadcast.CORE_QUERY_MEMBER_OK);
 					intent.putExtra("retModel", retModel);
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				case ErrorCode.QUERY_MEMBER_NO_SUCH_CARD:
-					Log.w(TAG, LogTemplate.CORE_QUERY_MEMBER_NO_SUCH_CARD);
+					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_MEMBER_NO_SUCH_CARD, cardid));
 					SystemUtil.sendLocalBroadcast(CoreService.this,
 							new Intent(Broadcast.CORE_QUERY_MEMBER_NO_SUCH_CARD));
 					break;
@@ -327,8 +328,8 @@ public class CoreService extends Service {
 	 */
 	public void type() {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.QUERY_TYPE);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		addCommonParams(params, Action.SERVER_QUERY_TYPE);
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -355,8 +356,8 @@ public class CoreService extends Service {
 	 */
 	public void floor() {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.QUERY_FLOOR);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		addCommonParams(params, Action.SERVER_QUERY_FLOOR);
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -388,10 +389,10 @@ public class CoreService extends Service {
 	 */
 	public void status(String floor, String type) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.QUERY_STATUS);
+		addCommonParams(params, Action.SERVER_QUERY_STATUS);
 		params.put("floor", floor);
 		params.put("type", type);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -419,11 +420,11 @@ public class CoreService extends Service {
 	 * @param cardid
 	 *            房卡号
 	 */
-	public void room(String cardid) {
+	public void room(final String cardid) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.QUERY_ROOM);
+		addCommonParams(params, Action.SERVER_QUERY_ROOM);
 		params.put("cardid", cardid);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -435,17 +436,17 @@ public class CoreService extends Service {
 				RoomDTO retModel = JSON.parseObject(new String(arg2), RoomDTO.class);
 				switch (retModel.getResult()) {
 				case ErrorCode.OK:
-					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_OK, retModel.getId()));
+					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_OK, cardid));
 					Intent intent = new Intent(Broadcast.CORE_QUERY_ROOM_OK);
 					intent.putExtra("retModel", retModel);
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				case ErrorCode.QUERY_ROOM_NO_CHECK_IN:
-					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_NO_CHECKIN, retModel.getId()));
+					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_NO_CHECKIN, cardid));
 					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_QUERY_ROOM_NO_CHECKIN));
 					break;
 				case ErrorCode.QUERY_ROOM_NO_SUCH_CARD:
-					Log.w(TAG, LogTemplate.CORE_QUERY_ROOM_NO_SUCH_CARD);
+					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_NO_SUCH_CARD, cardid));
 					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_QUERY_ROOM_NO_SUCH_CARD));
 					break;
 				default:
@@ -464,12 +465,12 @@ public class CoreService extends Service {
 	 * @param idcard
 	 *            身份证(图片文件名)
 	 */
-	public void guest(final String mobile, String idcard) {
+	public void guest(String mobile, String idcard) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.GUEST);
+		addCommonParams(params, Action.SERVER_GUEST);
 		params.put("mobile", mobile);
 		params.put("idcard", idcard);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -503,11 +504,11 @@ public class CoreService extends Service {
 	 */
 	public void checkin(String customer, String room, String time) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.CHECKIN);
+		addCommonParams(params, Action.SERVER_CHECKIN);
 		params.put("customer", customer);
 		params.put("room", room);
 		params.put("time", time);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -518,8 +519,45 @@ public class CoreService extends Service {
 				Log.d(TAG, new String(arg2));
 				CheckinDTO retModel = JSON.parseObject(new String(arg2), CheckinDTO.class);
 				if (retModel.getResult() == ErrorCode.OK) {
-					Log.i(TAG, LogTemplate.CORE_CHECKIN_OK);
-					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_CHECKIN_OK));
+					Log.i(TAG, String.format(LogTemplate.CORE_CHECKIN_OK, retModel.getId()));
+					Intent intent = new Intent(Broadcast.CORE_CHECKIN_OK);
+					intent.putExtra("id", retModel.getId());
+					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
+				} else {
+					onServerFailure(retModel.getResult());
+				}
+			}
+		});
+	}
+
+	/**
+	 * 办理续住手续
+	 * 
+	 * @param room
+	 *            房间ID
+	 * @param time
+	 *            拟退房时间
+	 */
+	public void extension(String room, String time) {
+		RequestParams params = new RequestParams();
+		addCommonParams(params, Action.SERVER_EXTENSION);
+		params.put("room", room);
+		params.put("time", time);
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+			@Override
+			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
+				onServerFailure(arg0);
+			}
+
+			@Override
+			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+				Log.d(TAG, new String(arg2));
+				CheckinDTO retModel = JSON.parseObject(new String(arg2), CheckinDTO.class);
+				if (retModel.getResult() == ErrorCode.OK) {
+					Log.i(TAG, String.format(LogTemplate.CORE_EXTENSION_OK, retModel.getId()));
+					Intent intent = new Intent(Broadcast.CORE_EXTENSION_OK);
+					intent.putExtra("id", retModel.getId());
+					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 				} else {
 					onServerFailure(retModel.getResult());
 				}
@@ -535,9 +573,9 @@ public class CoreService extends Service {
 	 */
 	public void checkout(String cardid) {
 		RequestParams params = new RequestParams();
-		addCommonParams(params, Action.CHECKOUT);
+		addCommonParams(params, Action.SERVER_CHECKOUT);
 		params.put("cardid", cardid);
-		HttpUtil.post(URL.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -547,22 +585,19 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				CheckoutDTO retModel = JSON.parseObject(new String(arg2), CheckoutDTO.class);
+				Intent intent;
 				switch (retModel.getResult()) {
 				case ErrorCode.OK:
-					Log.i(TAG, LogTemplate.CORE_CHECKOUT_OK);
-					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_CHECKOUT_OK));
+					Log.i(TAG, String.format(LogTemplate.CORE_CHECKOUT_OK, retModel.getId()));
+					intent = new Intent(Broadcast.CORE_CHECKOUT_OK);
+					intent.putExtra("id", retModel.getId());
+					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				case ErrorCode.CHECKOUT_NEED_PAY:
-					Log.w(TAG, LogTemplate.CORE_CHECKOUT_NEED_PAY);
-					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_CHECKOUT_NEED_PAY));
-					break;
-				case ErrorCode.CHECKOUT_NO_CHECKIN:
-					Log.w(TAG, LogTemplate.CORE_CHECKOUT_NO_CHECKIN);
-					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_CHECKOUT_NO_CHECKIN));
-					break;
-				case ErrorCode.CHECKOUT_NO_SUCH_CARD:
-					Log.w(TAG, LogTemplate.CORE_CHECKOUT_NO_SUCH_CARD);
-					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_CHECKOUT_NO_SUCH_CARD));
+					Log.w(TAG, String.format(LogTemplate.CORE_CHECKOUT_NEED_PAY, retModel.getId()));
+					intent = new Intent(Broadcast.CORE_CHECKOUT_NEED_PAY);
+					intent.putExtra("id", retModel.getId());
+					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				default:
 					onServerFailure(retModel.getResult());
@@ -587,11 +622,11 @@ public class CoreService extends Service {
 		try {
 			params.put("file", new File(filename));
 		} catch (FileNotFoundException e) {
-			Log.i(TAG, String.format(LogTemplate.CORE_FILE_UPLOAD_FAIL, e.getMessage()));
-			onServerFailure(ErrorCode.FILE_UPLOAD_ERROR);
+			Log.i(TAG, String.format(LogTemplate.CORE_FILE_NOT_FOUND, e.getMessage()));
+			SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_FILE_NOT_FOUND));
 			return;
 		}
-		HttpUtil.post(URL.FILE_UPLOAD_URL, params, new AsyncHttpResponseHandler() {
+		HttpUtil.post(Config.FILE_UPLOAD_URL, params, new AsyncHttpResponseHandler() {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				onServerFailure(arg0);
@@ -625,8 +660,7 @@ public class CoreService extends Service {
 		HttpUtil.get(url, null, new FileAsyncHttpResponseHandler(this) {
 			@Override
 			public void onFailure(int arg0, Header[] arg1, Throwable arg2, File arg3) {
-				Log.e(TAG, String.format(LogTemplate.CORE_FILE_DOWNLOAD_FAIL, arg2 != null ? arg2.getMessage() : null));
-				SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_FILE_DOWNLOAD_FAIL));
+				onServerFailure(arg0);
 			}
 
 			@Override
@@ -681,6 +715,10 @@ public class CoreService extends Service {
 
 		public void checkin(String customer, String room, String time) {
 			CoreService.this.checkin(customer, room, time);
+		}
+
+		public void extension(String room, String time) {
+			CoreService.this.extension(room, time);
 		}
 
 		public void checkout(String cardid) {

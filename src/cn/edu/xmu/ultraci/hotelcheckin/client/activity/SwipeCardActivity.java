@@ -10,14 +10,15 @@ import android.nfc.Tag;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
+import cn.edu.xmu.ultraci.hotelcheckin.client.dto.MemberDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.StringUtil;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
 /**
  * 刷卡界面
- *
  */
 public class SwipeCardActivity extends BaseActivity {
 	private static final String TAG = SwipeCardActivity.class.getSimpleName();
@@ -36,8 +37,6 @@ public class SwipeCardActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initView(true, getTitle().toString(), true, 20, R.layout.activity_swipe_card, false);
-
 		action = getIntent().getStringExtra("action");
 
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -45,21 +44,24 @@ public class SwipeCardActivity extends BaseActivity {
 				new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		mFilters = new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED) };
 		mTechLists = new String[][] { new String[] { NfcA.class.getName() } };
+
+		initView();
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		registerReceiver();
-		bindCoreService();
-		bindMiscService();
-		bindThirdpartyService();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		registerReceiver();
+		bindCoreService();
+		bindMiscService();
+		bindThirdpartyService();
 
 		if (mAdapter != null) {
 			mAdapter.enableForegroundDispatch(this, mPendingIntent, mFilters, mTechLists);
@@ -70,18 +72,17 @@ public class SwipeCardActivity extends BaseActivity {
 	protected void onPause() {
 		super.onPause();
 
+		SystemUtil.unregisterLocalBroadcast(this, receiver);
+		unbindService();
+
 		if (mAdapter != null) {
 			mAdapter.disableForegroundDispatch(this);
 		}
-
-		SystemUtil.unregisterLocalBroadcast(this, receiver);
-		unbindService();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		SystemUtil.unregisterLocalBroadcast(this, receiver);
 	}
 
 	@Override
@@ -91,27 +92,28 @@ public class SwipeCardActivity extends BaseActivity {
 		// 播放刷卡音效
 		getMiscServiceBinder().playEffect(R.raw.ding);
 		// 处理读取到的卡ID
-		if (nextActivity.equals(VoiceprintActivity.class.getSimpleName())) {
-			if (fromActivity.equals(InitActivity.class.getSimpleName())) {
-				// 登录
-				getCoreServiceBinder().login(cardid);
-			} else if (fromActivity.equals(MainActivity.class.getSimpleName())) {
-				// 登出
-				getCoreServiceBinder().logout(cardid);
-			}
-		} else if (nextActivity.equals(SelectTimeActivity.class.getSimpleName())) {
-			// 会员入住
+		switch (action) {
+		case Action.CLIENT_LOGIN:
+			getCoreServiceBinder().login(cardid);
+			break;
+		case Action.CLIENT_LOGOUT:
+			getCoreServiceBinder().logout(cardid);
+			break;
+		case Action.CLIENT_MEMBER_CHECKIN:
 			getCoreServiceBinder().member(cardid);
-		} else if (nextActivity.equals(RoomInfoActivity.class.getSimpleName())) {
-			// 查看房间信息
+			break;
+		case Action.CLIENT_EXTENSION:
 			getCoreServiceBinder().room(cardid);
+			break;
+		case Action.CLIENT_CHECKOUT:
+			getCoreServiceBinder().room(cardid);
+			break;
 		}
 	}
 
 	private void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
-		filter.addAction(Broadcast.CORE_SERIVCE_BOUND);
 		filter.addAction(Broadcast.CORE_LOGIN_OK);
 		filter.addAction(Broadcast.CORE_LOGOUT_OK);
 		filter.addAction(Broadcast.CORE_LOGIN_NO_PREMISSION);
@@ -127,41 +129,47 @@ public class SwipeCardActivity extends BaseActivity {
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
 
+	public void initView() {
+		setContent(true, getTitle().toString(), true, 30, R.layout.activity_swipe_card, false);
+	}
+
 	class SwipeCardReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Intent newIntent;
 			switch (intent.getAction()) {
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
-				// 合成语音
-				if (nextActivity.equals(VoiceprintActivity.class.getSimpleName())) {
+				// 播放语音提示
+				switch (action) {
+				case Action.CLIENT_LOGIN:
+				case Action.CLIENT_LOGOUT:
 					getThirdpartyServiceBinder().synthesicSpeech(TTS.SWIPE_CRAD_LOGIN_OUT);
-				} else if (nextActivity.equals(SelectTimeActivity.class.getSimpleName())) {
+					break;
+				case Action.CLIENT_MEMBER_CHECKIN:
 					getThirdpartyServiceBinder().synthesicSpeech(TTS.SWIPE_CRAD_QUERY_MEMBER);
-				} else if (nextActivity.equals(RoomInfoActivity.class.getSimpleName())) {
+					break;
+				case Action.CLIENT_EXTENSION:
+				case Action.CLIENT_CHECKOUT:
 					getThirdpartyServiceBinder().synthesicSpeech(TTS.SWIPE_CRAD_QUERY_ROOM);
+					break;
 				}
-				break;
-			case Broadcast.CORE_SERIVCE_BOUND:
-				// 请求服务端
 				break;
 			case Broadcast.CORE_LOGIN_OK:
 				// 登陆成功
-				finish();
 				newIntent = new Intent(SwipeCardActivity.this, VoiceprintActivity.class);
-				newIntent.putExtra("from", SwipeCardActivity.class.getSimpleName());
-				newIntent.putExtra("next", MainActivity.class.getSimpleName());
+				newIntent.putExtra("action", action);
+				// 讯飞API不允许用户ID数字开头
 				newIntent.putExtra("uid", "u" + cardid);
 				startActivity(newIntent);
+				finish();
 				break;
 			case Broadcast.CORE_LOGOUT_OK:
 				// 登出成功
-				finish();
 				newIntent = new Intent(SwipeCardActivity.this, VoiceprintActivity.class);
-				newIntent.putExtra("from", SwipeCardActivity.class.getSimpleName());
-				newIntent.putExtra("next", MainActivity.class.getSimpleName());
+				newIntent.putExtra("action", action);
 				newIntent.putExtra("uid", "u" + cardid);
 				startActivity(newIntent);
+				finish();
 				break;
 			case Broadcast.CORE_LOGIN_NO_PREMISSION:
 				// 登录失败无权限
@@ -178,10 +186,16 @@ public class SwipeCardActivity extends BaseActivity {
 				break;
 			case Broadcast.CORE_QUERY_MEMBER_OK:
 				// 查询会员成功
-				finish();
 				newIntent = new Intent(SwipeCardActivity.this, SelectTimeActivity.class);
+				newIntent.putExtra("action", action);
 				newIntent.putExtra("retModel", intent.getSerializableExtra("retModel"));
+				// TEST
+				MemberDTO retModel = (MemberDTO) intent.getSerializableExtra("retModel");
+				SystemUtil.setPreferences(SwipeCardActivity.this, "mobile", retModel.getMobile());
+				SystemUtil.setPreferences(SwipeCardActivity.this, "customer", retModel.getId() + "");
+				// ENDTEST
 				startActivity(newIntent);
+				finish();
 				break;
 			case Broadcast.CORE_QUERY_MEMBER_NO_SUCH_CARD:
 				// 查询会员失败无此卡
@@ -189,10 +203,12 @@ public class SwipeCardActivity extends BaseActivity {
 				break;
 			case Broadcast.CORE_QUERY_ROOM_OK:
 				// 查询房间成功
-				finish();
 				newIntent = new Intent(SwipeCardActivity.this, RoomInfoActivity.class);
+				newIntent.putExtra("action", action);
+				newIntent.putExtra("cardid", cardid);
 				newIntent.putExtra("retModel", intent.getSerializableExtra("retModel"));
 				startActivity(newIntent);
+				finish();
 				break;
 			case Broadcast.CORE_QUERY_ROOM_NO_CHECKIN:
 				// 查询房间失败未入住

@@ -86,7 +86,7 @@ public class SystemUtil {
 	 * @return 值
 	 */
 	public static String getPreferences(Context context, String name) {
-		SharedPreferences sp = context.getSharedPreferences("config", Context.MODE_PRIVATE);
+		SharedPreferences sp = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 		return sp.getString(name, null);
 	}
 
@@ -101,7 +101,7 @@ public class SystemUtil {
 	 *            值
 	 */
 	public static void setPreferences(Context context, String name, String value) {
-		SharedPreferences sp = context.getSharedPreferences("config", Context.MODE_PRIVATE);
+		SharedPreferences sp = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 		Editor editor = sp.edit();
 		editor.putString(name, value);
 		editor.commit();

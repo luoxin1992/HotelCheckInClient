@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     android:orientation="vertical"
     tools:context="${relativePackage}.${activityClass}" >
 
@@ -11,20 +12,24 @@
         android:layout_marginTop="2dp"
         android:layout_weight="1" >
 
-        <ImageView
-            android:id="@+id/btn_member_checkin"
+        <ImageButton
+            android:id="@+id/ib_member_checkin"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/member_checkin" />
+            android:background="@drawable/member_checkin"
+            android:contentDescription="@string/ib_member_checkin"
+            android:onClick="toSubfunction" />
 
-        <ImageView
-            android:id="@+id/btn_guest_checkin"
+        <ImageButton
+            android:id="@+id/ib_guest_checkin"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="2dp"
             android:layout_weight="1"
-            android:background="@drawable/guest_checkin" />
+            android:background="@drawable/guest_checkin"
+            android:contentDescription="@string/ib_guest_checkin"
+            android:onClick="toSubfunction" />
     </LinearLayout>
 
     <LinearLayout
@@ -34,28 +39,34 @@
         android:layout_marginTop="2dp"
         android:layout_weight="1" >
 
-        <ImageView
-            android:id="@+id/btn_extension"
+        <ImageButton
+            android:id="@+id/ib_extension"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/extension" />
+            android:background="@drawable/extension"
+            android:contentDescription="@string/ib_extension"
+            android:onClick="toSubfunction" />
 
-        <ImageView
-            android:id="@+id/btn_checkout"
+        <ImageButton
+            android:id="@+id/ib_checkout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="2dp"
             android:layout_weight="1"
-            android:background="@drawable/checkout" />
+            android:background="@drawable/checkout"
+            android:contentDescription="@string/ib_checkout"
+            android:onClick="toSubfunction" />
 
-        <ImageView
-            android:id="@+id/btn_about"
+        <ImageButton
+            android:id="@+id/ib_about"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="2dp"
             android:layout_weight="1"
-            android:background="@drawable/about" />
+            android:background="@drawable/about"
+            android:contentDescription="@string/ib_about"
+            android:onClick="toSubfunction" />
     </LinearLayout>
 
 </LinearLayout>

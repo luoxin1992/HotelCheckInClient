@@ -32,7 +32,6 @@ import cn.smssdk.SMSSDK;
  * 科大讯飞语音合成<br>
  * 科大讯飞声纹密码<br>
  * 掌淘科技验证码<br>
- * 云片网络验证码<br>
  * </ul>
  * 
  * @author LuoXin
@@ -352,18 +351,6 @@ public class ThirdpartyService extends Service {
 	}
 
 	/**
-	 * 发送短信验证码(云片网络)
-	 * 
-	 * @param mobile
-	 *            手机号
-	 * @return 验证码
-	 */
-	public String sendSMSCaptchaV2(String mobile) {
-		// TODO
-		return null;
-	}
-
-	/**
 	 * 发送短信验证码(掌淘科技)
 	 * 
 	 * @param mobile
@@ -406,10 +393,6 @@ public class ThirdpartyService extends Service {
 
 		public void synthesicSpeech(String text) {
 			ThirdpartyService.this.syntheticSpeech(text);
-		}
-
-		public void sendSMSCaptchaV2(String mobile) {
-			ThirdpartyService.this.sendSMSCaptchaV2(mobile);
 		}
 
 		public void sendSMSCaptcha(String mobile) {

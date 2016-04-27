@@ -101,6 +101,9 @@ public class TestCoreServiceActivity extends Activity {
 		case R.id.button14:
 			binder.download(param1, param2);
 			break;
+		case R.id.button15:
+			binder.extension(param1, param2);
+			break;
 		}
 	}
 }

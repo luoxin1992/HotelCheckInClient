@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
@@ -82,8 +83,8 @@ public class VoiceprintActivity extends BaseActivity {
 	 * 初始化布局
 	 */
 	public void initView() {
-		initView(true, getTitle().toString(), true, 40, R.layout.activity_voiceprint, false);
-		
+		setContent(true, getTitle().toString(), true, 30, R.layout.activity_voiceprint, false);
+
 		ivPwd[0] = (ImageView) findViewById(R.id.iv_pwd1);
 		ivPwd[1] = (ImageView) findViewById(R.id.iv_pwd2);
 		ivPwd[2] = (ImageView) findViewById(R.id.iv_pwd3);
@@ -160,10 +161,16 @@ public class VoiceprintActivity extends BaseActivity {
 				break;
 			case Broadcast.IFLYTEK_VERIFY_OK:
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_OK);
-				// 验证成功后根据来源Activity确定下一个Activity
-				finish();
-				if (nextActivity.equals(MainActivity.class.getSimpleName())) {
+				// 登录验证成功进主界面，登出验证成功设置标记关闭主界面
+				switch (action) {
+				case Action.CLIENT_LOGIN:
 					startActivity(new Intent(VoiceprintActivity.this, MainActivity.class));
+					finish();
+					break;
+				case Action.CLIENT_LOGOUT:
+					VoiceprintActivity.this.setResult(RESULT_OK, null);
+					finish();
+					break;
 				}
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_VOICE:

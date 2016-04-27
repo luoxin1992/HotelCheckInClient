@@ -19,8 +19,14 @@ public class Config {
 	// public static final String SERVER_IP = "10.30.172.122";
 	// public static final String SERVER_PORT = "9237";
 	// 实验室
-	// public static final String SERVER_IP = "192.168.1.109";
+	// public static final String SERVER_IP = "192.168.1.128";
 	// public static final String SERVER_PORT = "9237";
+
+	// 服务端请求URL
+	public static final String URK_PREFIX = "http://" + Config.SERVER_IP + ":" + Config.SERVER_PORT;
+	public static final String ADMIN_URL = URK_PREFIX + "/HotelCheckInServer/AdminServlet.do";
+	public static final String CLIENT_URL = URK_PREFIX + "/HotelCheckInServer/ClientServlet.do";
+	public static final String FILE_UPLOAD_URL = URK_PREFIX + "/HotelCheckInServer/FileUploadServlet.do";
 
 	// 鉴权Token
 	public static final String TOKEN = "cVko8367";
@@ -32,6 +38,5 @@ public class Config {
 	public static final String IFLYTEK_APPID = "5712ee34";
 	public static final String MOB_APP_KEY = "11d7191a172b6";
 	public static final String MOB_APP_SECRET = "350686c34143695c9fe18d5cfe96df96";
-	public static final String CAPTCHA_SDK = "mob";
 
 }

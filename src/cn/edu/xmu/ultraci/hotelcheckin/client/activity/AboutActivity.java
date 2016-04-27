@@ -5,14 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
 /**
  * 结果显示界面
  */
-public class ResultActivity extends BaseActivity {
-	private static final String TAG = ResultActivity.class.getSimpleName();
+public class AboutActivity extends BaseActivity {
+	private static final String TAG = AboutActivity.class.getSimpleName();
 
 	private ResultReceiver receiver;
 
@@ -21,6 +22,10 @@ public class ResultActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		action = getIntent().getStringExtra("action");
+
+		initView();
 	}
 
 	@Override
@@ -55,7 +60,7 @@ public class ResultActivity extends BaseActivity {
 	}
 
 	public void initView() {
-
+		setContent(true, getTitle().toString(), false, 0, R.layout.activity_about, false);
 	}
 
 	public void updateView() {
