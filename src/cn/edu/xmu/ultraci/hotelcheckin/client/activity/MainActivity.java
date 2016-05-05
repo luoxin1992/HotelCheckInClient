@@ -22,27 +22,23 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		initView();
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
+		registerReceiver();
 	}
 
 	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+	protected void onStop() {
+		super.onStop();
+		SystemUtil.unregisterLocalBroadcast(this, receiver);
 	}
 
 	public void registerReceiver() {
-		IntentFilter filter = new IntentFilter();
+		IntentFilter filter = new IntentFilter(Broadcast.CORE_SERVER_REQUEST_FAIL);
 		receiver = new MainReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
@@ -54,29 +50,32 @@ public class MainActivity extends BaseActivity {
 	public void toSubfunction(View v) {
 		Intent newIntent;
 		switch (v.getId()) {
-		case R.id.btn_member_checkin:
+		case R.id.ib_member_checkin:
 			newIntent = new Intent(this, SwipeCardActivity.class);
 			newIntent.putExtra("action", Action.CLIENT_MEMBER_CHECKIN);
+			newIntent.putExtra("extras", new Bundle());
 			startActivity(newIntent);
 			break;
-		case R.id.btn_guest_checkin:
+		case R.id.ib_guest_checkin:
 			newIntent = new Intent(this, CaptureIdCardActivity.class);
 			newIntent.putExtra("action", Action.CLIENT_GUEST_CHECKIN);
+			newIntent.putExtra("extras", new Bundle());
 			startActivity(newIntent);
 			break;
-		case R.id.btn_extension:
+		case R.id.ib_extension:
 			newIntent = new Intent(this, SwipeCardActivity.class);
 			newIntent.putExtra("action", Action.CLIENT_EXTENSION);
+			newIntent.putExtra("extras", new Bundle());
 			startActivity(newIntent);
 			break;
-		case R.id.btn_checkout:
+		case R.id.ib_checkout:
 			newIntent = new Intent(this, SwipeCardActivity.class);
 			newIntent.putExtra("action", Action.CLIENT_CHECKOUT);
+			newIntent.putExtra("extras", new Bundle());
 			startActivity(newIntent);
 			break;
-		case R.id.btn_about:
+		case R.id.ib_about:
 			newIntent = new Intent(this, AboutActivity.class);
-			newIntent.putExtra("action", Action.CLIENT_ABOUT);
 			startActivity(newIntent);
 			break;
 		}
@@ -85,7 +84,12 @@ public class MainActivity extends BaseActivity {
 	class MainReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-
+			switch (intent.getAction()) {
+			case Broadcast.CORE_SERVER_REQUEST_FAIL:
+				Intent newIntent = new Intent(MainActivity.this, ServerCrashActivity.class);
+				MainActivity.this.startActivity(newIntent);
+				break;
+			}
 		}
 	}
 

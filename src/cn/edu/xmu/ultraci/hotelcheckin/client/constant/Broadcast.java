@@ -30,6 +30,7 @@ public class Broadcast {
 
 	public static final String CORE_SERVER_PROCESS_FAIL = CORE_PREFIX + "server.PROCESS_FAIL";
 	public static final String CORE_SERVER_REQUEST_FAIL = CORE_PREFIX + "server.REQUEST_FAIL";
+	public static final String CORE_SERVER_OK = CORE_PREFIX + "server.OK";
 
 	public static final String CORE_INIT_OK = CORE_PREFIX + "init.OK";
 	public static final String CORE_LOGIN_OK = CORE_PREFIX + "login.OK";
@@ -47,6 +48,7 @@ public class Broadcast {
 	public static final String CORE_QUERY_ROOM_OK = CORE_PREFIX + "query.room.OK";
 	public static final String CORE_QUERY_ROOM_NO_CHECKIN = CORE_PREFIX + "query.room.NO_CHECKIN";
 	public static final String CORE_QUERY_ROOM_NO_SUCH_CARD = CORE_PREFIX + "query.room.NO_SUCH_CARD";
+	public static final String CORE_QUERY_INFO_OK = CORE_PREFIX + "query.info.OK";
 
 	public static final String CORE_GUEST_OK = CORE_PREFIX + "guest.OK";
 	public static final String CORE_CHECKIN_OK = CORE_PREFIX + "checkin.OK";
@@ -65,8 +67,10 @@ public class Broadcast {
 
 	public static final String MISC_BLUETOOTH_NONSUPPORT = MISC_PREFIX + "bluetooth.NONSUPPORT";
 	public static final String MISC_BLUETOOTH_DISABLE = MISC_PREFIX + "bluetooeh.DISABLE";
+	public static final String MISC_BLUETOOTH_OK = MISC_PREFIX + "bluetooeh.OK";
 	public static final String MISC_NFC_NONSUPPORT = MISC_PREFIX + "nfc.NONSUPPORT";
 	public static final String MISC_NFC_DISABLE = MISC_PREFIX + "nfc.DISABLE";
+	public static final String MISC_NFC_OK = MISC_PREFIX + "nfc.OK";
 	public static final String MISC_PRINTER_OK = MISC_PREFIX + "printer.OK";
 	public static final String MISC_PRINTER_CONN_FAIL = MISC_PREFIX + "printer.CONN_FAIL";
 }

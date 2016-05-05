@@ -75,13 +75,14 @@ public class MiscService extends Service {
 	}
 
 	/**
-	 * 初始化蓝牙适配器
+	 * 检查蓝牙适配器
 	 */
 	public void checkBluetooth() {
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		if (adapter != null) {
 			if (adapter.isEnabled()) {
 				Log.i(TAG, LogTemplate.MISC_BLUETOOTH_OK);
+				SystemUtil.sendLocalBroadcast(this, new Intent(Broadcast.MISC_BLUETOOTH_OK));
 			} else {
 				Log.w(TAG, LogTemplate.MISC_BLUETOOTH_DISABLE);
 				SystemUtil.sendLocalBroadcast(this, new Intent(Broadcast.MISC_BLUETOOTH_DISABLE));
@@ -89,18 +90,18 @@ public class MiscService extends Service {
 		} else {
 			Log.e(TAG, LogTemplate.MISC_BLUETOOTH_NONSUPPORT);
 			SystemUtil.sendLocalBroadcast(this, new Intent(Broadcast.MISC_BLUETOOTH_NONSUPPORT));
-
 		}
 	}
 
 	/**
-	 * 初始化NFC适配器
+	 * 检查NFC适配器
 	 */
 	public void checkNFC() {
 		NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
 		if (adapter != null) {
 			if (adapter.isEnabled()) {
 				Log.i(TAG, LogTemplate.MISC_NFC_OK);
+				SystemUtil.sendLocalBroadcast(this, new Intent(Broadcast.MISC_NFC_OK));
 			} else {
 				Log.w(TAG, LogTemplate.MISC_NFC_DISABLE);
 				SystemUtil.sendLocalBroadcast(this, new Intent(Broadcast.MISC_NFC_DISABLE));
@@ -276,16 +277,12 @@ public class MiscService extends Service {
 				// 酒店名称
 				setPrintFormat(Bluetooth.FONT_4, Bluetooth.FONT_BOLD, Bluetooth.ALIGN_CENTER);
 				printText(SystemUtil.getPreferences(MiscService.this, "name"));
-				// 酒店信息
-				setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_RIGHT);
-				printText(SystemUtil.getPreferences(MiscService.this, "address"));
-				printText(SystemUtil.getPreferences(MiscService.this, "telephone"));
 				// 打印时间
 				setPrintFormat(Bluetooth.FONT_1, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
 				printText(TimeUtil.formatDateTime(System.currentTimeMillis()));
 				// 分割线
 				setPrintFormat(0, 0, 0);
-				printText("--------------------");
+				printText("--------------------------------");
 				// 客人信息（姓名、电话）
 				setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
 				printText("姓名：" + content.get("name"));
@@ -302,13 +299,17 @@ public class MiscService extends Service {
 				printText("预离：" + content.get("checkout"));
 				// 分割线
 				setPrintFormat(0, 0, 0);
-				printText("--------------------");
+				printText("--------------------------------");
 				// 宾客须知
 				setPrintFormat(Bluetooth.FONT_1, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
 				printText(SystemUtil.getPreferences(MiscService.this, "notice"));
 				// 谢谢惠顾
 				setPrintFormat(Bluetooth.FONT_3, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
-				printText("再次感谢阁下的光临！");
+				printText("衷心感谢阁下的光临！");
+				// 酒店信息
+				setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
+				printText(SystemUtil.getPreferences(MiscService.this, "address"));
+				printText(SystemUtil.getPreferences(MiscService.this, "telephone"));
 				// 空行(解决打印机最后出纸长度不足)
 				setPrintFormat(0, 0, 0);
 				printText("\n");
@@ -317,20 +318,20 @@ public class MiscService extends Service {
 	}
 
 	public class MiscServiceBinder extends Binder {
+		public void checkBluetooth() {
+			MiscService.this.checkBluetooth();
+		}
+
+		public void checkNFC() {
+			MiscService.this.checkNFC();
+		}
+
 		public void playEffect(int resId) {
 			MiscService.this.playEffect(resId);
 		}
 
 		public void printTicket(Map<String, String> content) {
 			MiscService.this.printTicket(content);
-		}
-
-		public void setPrintFormat(int size, int type, int align) {
-			MiscService.this.setPrintFormat(size, type, align);
-		}
-
-		public void printTest(String text) {
-			MiscService.this.printText(text);
 		}
 	}
 }

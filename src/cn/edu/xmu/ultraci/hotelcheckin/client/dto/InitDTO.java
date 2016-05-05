@@ -14,7 +14,7 @@ public class InitDTO extends BaseDTO implements Serializable {
 	private static final long serialVersionUID = -4763259596966441943L;
 
 	private Upgrade upgrade;
-	private String notice;
+	private String announcement;
 	private List<Advertisement> ads;
 
 	public InitDTO() {
@@ -39,12 +39,12 @@ public class InitDTO extends BaseDTO implements Serializable {
 		setUpgrade(upgrade);
 	}
 
-	public String getNotice() {
-		return notice;
+	public String getAnnouncement() {
+		return announcement;
 	}
 
-	public void setNotice(String notice) {
-		this.notice = notice;
+	public void setAnnouncement(String announcement) {
+		this.announcement = announcement;
 	}
 
 	public List<Advertisement> getAds() {

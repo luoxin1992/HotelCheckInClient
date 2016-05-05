@@ -19,7 +19,7 @@ import android.util.Log;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Config;
-import cn.edu.xmu.ultraci.hotelcheckin.client.constant.ErrorCode;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.LogTemplate;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.CheckinDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.CheckoutDTO;
@@ -27,6 +27,7 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.dto.FileUploadDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.FloorDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.GuestDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.HeartbeatDTO;
+import cn.edu.xmu.ultraci.hotelcheckin.client.dto.InfoDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.InitDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.LoginDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.LogoutDTO;
@@ -142,10 +143,11 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				HeartbeatDTO retModel = JSON.parseObject(new String(arg2), HeartbeatDTO.class);
-				if (retModel.getResult() != ErrorCode.OK) {
-					// 心跳响应异常视为服务端错误
-					// 表现层应区别处理
-					onServerFailure(retModel.getResult());
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
+					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_SERVER_OK));
+				} else {
+					// 心跳响应异常视为服务端请求错误，表现层应区别处理
+					onServerFailure(arg0);
 				}
 			}
 		});
@@ -167,7 +169,7 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				InitDTO retModel = JSON.parseObject(new String(arg2), InitDTO.class);
-				if (retModel.getResult() == ErrorCode.OK) {
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
 					if (retModel.getUpgrade() != null) {
 						// TODO 客户端在线升级
 					}
@@ -175,7 +177,7 @@ public class CoreService extends Service {
 						// TODO 客户端闲时广告
 					}
 					Intent intent = new Intent(Broadcast.CORE_INIT_OK);
-					intent.putExtra("notice", retModel.getNotice());
+					intent.putExtra("announcement", retModel.getAnnouncement());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 				} else {
 					onServerFailure(retModel.getResult());
@@ -206,21 +208,21 @@ public class CoreService extends Service {
 				LoginDTO retModel = JSON.parseObject(new String(arg2), LoginDTO.class);
 				Intent intent;
 				switch (retModel.getResult()) {
-				case ErrorCode.OK:
+				case Code.ERRORCODE_OK:
 					Log.i(TAG, String.format(LogTemplate.CORE_LOGIN_OK, cardid));
 					intent = new Intent(Broadcast.CORE_LOGIN_OK);
 					intent.putExtra("id", retModel.getId());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
-				case ErrorCode.LOGIN_OUT_NO_PREMISSION:
+				case Code.ERRORCODE_LOGIN_OUT_NO_PREMISSION:
 					Log.w(TAG, String.format(LogTemplate.CORE_LOGIN_NO_PREMISSION, cardid));
 					intent = new Intent(Broadcast.CORE_LOGIN_NO_PREMISSION);
 					intent.putExtra("id", retModel.getId());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
-				case ErrorCode.LOGIN_OUT_NO_SUCH_CARD:
+				case Code.ERRORCODE_LOGIN_OUT_NO_SUCH_CARD:
 					Log.w(TAG, String.format(LogTemplate.CORE_LOGIN_NO_SUCH_CARD, cardid));
 					intent = new Intent(Broadcast.CORE_LOGIN_NO_SUCH_CARD);
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
@@ -255,21 +257,21 @@ public class CoreService extends Service {
 				LogoutDTO retModel = JSON.parseObject(new String(arg2), LogoutDTO.class);
 				Intent intent;
 				switch (retModel.getResult()) {
-				case ErrorCode.OK:
+				case Code.ERRORCODE_OK:
 					Log.i(TAG, String.format(LogTemplate.CORE_LOGOUT_OK, cardid));
 					intent = new Intent(Broadcast.CORE_LOGOUT_OK);
 					intent.putExtra("id", retModel.getId());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
-				case ErrorCode.LOGIN_OUT_NO_PREMISSION:
+				case Code.ERRORCODE_LOGIN_OUT_NO_PREMISSION:
 					Log.w(TAG, String.format(LogTemplate.CORE_LOGOUT_NO_PREMISSION, cardid));
 					intent = new Intent(Broadcast.CORE_LOGOUT_NO_PREMISSION);
 					intent.putExtra("id", retModel.getId());
 					intent.putExtra("name", retModel.getName());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
-				case ErrorCode.LOGIN_OUT_NO_SUCH_CARD:
+				case Code.ERRORCODE_LOGIN_OUT_NO_SUCH_CARD:
 					Log.w(TAG, String.format(LogTemplate.CORE_LOGOUT_NO_SUCH_CARD, cardid));
 					intent = new Intent(Broadcast.CORE_LOGOUT_NO_SUCH_CARD);
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
@@ -303,14 +305,14 @@ public class CoreService extends Service {
 				Log.d(TAG, new String(arg2));
 				MemberDTO retModel = JSON.parseObject(new String(arg2), MemberDTO.class);
 				switch (retModel.getResult()) {
-				case ErrorCode.OK:
+				case Code.ERRORCODE_OK:
 					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_MEMBER_OK, cardid));
 					// 查询类服务返回模型较复杂，直接转发到表现层，下同
 					Intent intent = new Intent(Broadcast.CORE_QUERY_MEMBER_OK);
 					intent.putExtra("retModel", retModel);
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
-				case ErrorCode.QUERY_MEMBER_NO_SUCH_CARD:
+				case Code.ERRORCODE_QUERY_MEMBER_NO_SUCH_CARD:
 					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_MEMBER_NO_SUCH_CARD, cardid));
 					SystemUtil.sendLocalBroadcast(CoreService.this,
 							new Intent(Broadcast.CORE_QUERY_MEMBER_NO_SUCH_CARD));
@@ -339,7 +341,7 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				TypeDTO retModel = JSON.parseObject(new String(arg2), TypeDTO.class);
-				if (retModel.getResult() == ErrorCode.OK) {
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
 					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_TYPE_OK, retModel.getTypes().size()));
 					Intent intent = new Intent(Broadcast.CORE_QUERY_TYPE_OK);
 					intent.putExtra("retModel", retModel);
@@ -367,7 +369,7 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				FloorDTO retModel = JSON.parseObject(new String(arg2), FloorDTO.class);
-				if (retModel.getResult() == ErrorCode.OK) {
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
 					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_FLOOR_OK, retModel.getFloors().size()));
 					Intent intent = new Intent(Broadcast.CORE_QUERY_FLOOR_OK);
 					intent.putExtra("retModel", retModel);
@@ -402,7 +404,7 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				StatusDTO retModel = JSON.parseObject(new String(arg2), StatusDTO.class);
-				if (retModel.getResult() == ErrorCode.OK) {
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
 					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_STATUS_OK, retModel.getStatuses().size()));
 					Intent intent = new Intent(Broadcast.CORE_QUERY_STATUS_OK);
 					intent.putExtra("retModel", retModel);
@@ -435,19 +437,55 @@ public class CoreService extends Service {
 				Log.d(TAG, new String(arg2));
 				RoomDTO retModel = JSON.parseObject(new String(arg2), RoomDTO.class);
 				switch (retModel.getResult()) {
-				case ErrorCode.OK:
+				case Code.ERRORCODE_OK:
 					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_OK, cardid));
 					Intent intent = new Intent(Broadcast.CORE_QUERY_ROOM_OK);
 					intent.putExtra("retModel", retModel);
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
-				case ErrorCode.QUERY_ROOM_NO_CHECK_IN:
+				case Code.ERRORCODE_QUERY_ROOM_NO_CHECK_IN:
 					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_NO_CHECKIN, cardid));
 					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_QUERY_ROOM_NO_CHECKIN));
 					break;
-				case ErrorCode.QUERY_ROOM_NO_SUCH_CARD:
+				case Code.ERRORCODE_QUERY_ROOM_NO_SUCH_CARD:
 					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_NO_SUCH_CARD, cardid));
 					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_QUERY_ROOM_NO_SUCH_CARD));
+					break;
+				default:
+					onServerFailure(retModel.getResult());
+					break;
+				}
+			}
+		});
+	}
+
+	/**
+	 * 查询其他信息
+	 * 
+	 * @param type
+	 *            信息类型
+	 * 
+	 */
+	public void info(String type) {
+		RequestParams params = new RequestParams();
+		addCommonParams(params, Action.SERVER_QUERY_INFO);
+		params.put("type", type);
+		HttpUtil.post(Config.CLIENT_URL, params, new AsyncHttpResponseHandler() {
+			@Override
+			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
+				onServerFailure(arg0);
+			}
+
+			@Override
+			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+				Log.d(TAG, new String(arg2));
+				InfoDTO retModel = JSON.parseObject(new String(arg2), InfoDTO.class);
+				switch (retModel.getResult()) {
+				case Code.ERRORCODE_OK:
+					Log.i(TAG, LogTemplate.CORE_QUERY_INFO_OK);
+					Intent intent = new Intent(Broadcast.CORE_QUERY_INFO_OK);
+					intent.putExtra("retModel", retModel);
+					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
 				default:
 					onServerFailure(retModel.getResult());
@@ -480,7 +518,7 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				GuestDTO retModel = JSON.parseObject(new String(arg2), GuestDTO.class);
-				if (retModel.getResult() == ErrorCode.OK) {
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
 					Log.i(TAG, String.format(LogTemplate.CORE_GUEST_OK, retModel.getId()));
 					Intent intent = new Intent(Broadcast.CORE_GUEST_OK);
 					intent.putExtra("id", retModel.getId());
@@ -518,7 +556,7 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				CheckinDTO retModel = JSON.parseObject(new String(arg2), CheckinDTO.class);
-				if (retModel.getResult() == ErrorCode.OK) {
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
 					Log.i(TAG, String.format(LogTemplate.CORE_CHECKIN_OK, retModel.getId()));
 					Intent intent = new Intent(Broadcast.CORE_CHECKIN_OK);
 					intent.putExtra("id", retModel.getId());
@@ -553,7 +591,7 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				CheckinDTO retModel = JSON.parseObject(new String(arg2), CheckinDTO.class);
-				if (retModel.getResult() == ErrorCode.OK) {
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
 					Log.i(TAG, String.format(LogTemplate.CORE_EXTENSION_OK, retModel.getId()));
 					Intent intent = new Intent(Broadcast.CORE_EXTENSION_OK);
 					intent.putExtra("id", retModel.getId());
@@ -587,13 +625,13 @@ public class CoreService extends Service {
 				CheckoutDTO retModel = JSON.parseObject(new String(arg2), CheckoutDTO.class);
 				Intent intent;
 				switch (retModel.getResult()) {
-				case ErrorCode.OK:
+				case Code.ERRORCODE_OK:
 					Log.i(TAG, String.format(LogTemplate.CORE_CHECKOUT_OK, retModel.getId()));
 					intent = new Intent(Broadcast.CORE_CHECKOUT_OK);
 					intent.putExtra("id", retModel.getId());
 					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
 					break;
-				case ErrorCode.CHECKOUT_NEED_PAY:
+				case Code.ERRORCODE_CHECKOUT_NEED_PAY:
 					Log.w(TAG, String.format(LogTemplate.CORE_CHECKOUT_NEED_PAY, retModel.getId()));
 					intent = new Intent(Broadcast.CORE_CHECKOUT_NEED_PAY);
 					intent.putExtra("id", retModel.getId());
@@ -636,7 +674,7 @@ public class CoreService extends Service {
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
 				FileUploadDTO retModel = JSON.parseObject(new String(arg2), FileUploadDTO.class);
-				if (retModel.getResult() == ErrorCode.OK) {
+				if (retModel.getResult() == Code.ERRORCODE_OK) {
 					Log.i(TAG, String.format(LogTemplate.CORE_FILE_UPLOAD_OK, retModel.getFilename()));
 					Intent intent = new Intent(Broadcast.CORE_FILE_UPLOAD_OK);
 					intent.putExtra("filename", retModel.getFilename());
@@ -707,6 +745,10 @@ public class CoreService extends Service {
 
 		public void room(String cardid) {
 			CoreService.this.room(cardid);
+		}
+
+		public void info(String type) {
+			CoreService.this.info(type);
 		}
 
 		public void guest(String mobile, String idcard) {

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:layout_marginEnd="16dp"
     android:layout_marginStart="16dp"
+    calendar:currentDaySelected="true"
     calendar:drawRoundRect="true"
-    calendar:lastMonth="january"
+    calendar:enablePreviousDay="false"
     tools:context="${relativePackage}.${activityClass}" />

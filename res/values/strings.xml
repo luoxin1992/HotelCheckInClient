@@ -31,6 +31,15 @@
     <string name="iv_room_selected">已选</string>
     <string name="iv_room_sold">已售</string>
 
+    <!-- 支付界面 -->
+    <string name="iv_qrcode">支付二维码</string>
+
+    <!-- 关于界面 -->
+    <string name="iv_us">关于我们</string>
+
+    <!-- 对话框 -->
+    <string name="iv_type">对话类型</string>
+
     <!-- 界面文本 -->
     <!-- 初始化界面 -->
     <string name="tv_init">系统初始化中，请稍后……</string>
@@ -58,18 +67,30 @@
     <string name="tv_room_selected">已选</string>
     <string name="tv_room_sold">已售</string>
 
-    <!-- 房间信息界面和支付界面 -->
+    <!-- 房间信息界面 -->
     <string name="tv_room">房号：</string>
     <string name="tv_type">房型：</string>
     <string name="tv_price">房价：</string>
     <string name="tv_mobile">手机：</string>
     <string name="tv_checkin">入住：</string>
     <string name="tv_checkout">预离：</string>
-    <string name="tv_days">天数：</string>
-    <string name="tv_total">总价：</string>
+    <string name="btn_checkin">入住</string>
     <string name="btn_extension">续住</string>
     <string name="btn_checkout">退房</string>
-    <string name="btn_pay">支付</string>
+
+    <!-- 支付界面 -->
+    <string name="tv_days1">总计入住</string>
+    <string name="tv_days2">天</string>
+    <string name="tv_total1">，共需支付</string>
+    <string name="tv_total2">元</string>
+    <string name="btn_pay">我已支付</string>
+
+    <!-- 关于界面 -->
+    <string name="tv_us">此《酒店自助入住终端》是厦门大学信息科学与技术学院“美团点评杯”软件开发大赛的参赛作品。\n\n参赛选手：\n骆欣\t\t计算机科学系\n谢波\t\t计算机科学系\n刘凯\t\t智能科学与技术系\n</string>
+
+    <!-- 对话框 -->
+    <string name="btn_dismiss">确定</string>
+    <string name="tv_waiting">请稍候……</string>
 
     <!-- Activity标题 -->
     <string name="title_activity_swipe_card">请刷卡</string>

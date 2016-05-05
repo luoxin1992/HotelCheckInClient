@@ -1,12 +1,35 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:orientation="horizontal"
     tools:context="${relativePackage}.${activityClass}" >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_weight="1"
+        android:contentDescription="@string/iv_us"
+        android:src="@drawable/us" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/darker_gray" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_gravity="top|end"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:lineSpacingMultiplier="1.2"
+        android:text="@string/tv_us"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-</RelativeLayout>
+</LinearLayout>

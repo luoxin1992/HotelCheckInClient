@@ -28,6 +28,7 @@ import android.content.res.TypedArray;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 
 public class DayPickerView extends RecyclerView
 {

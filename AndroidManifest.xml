@@ -49,18 +49,18 @@
         </activity>
 
         <!-- 基础布局 -->
-
-        <activity
-            android:name=".activity.BaseActivity"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
-        </activity>
+        <activity android:name=".activity.BaseActivity" />
 
         <!-- 实际布局 -->
         <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.SwipeCardActivity"
@@ -76,7 +76,6 @@
         </activity>
         <activity
             android:name=".activity.InitActivity"
-            android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" >
             <intent-filter>

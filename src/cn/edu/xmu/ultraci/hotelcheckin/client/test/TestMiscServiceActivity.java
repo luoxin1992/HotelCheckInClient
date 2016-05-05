@@ -102,7 +102,9 @@ public class TestMiscServiceActivity extends Activity {
 			makeToast("右对齐");
 			break;
 		}
-		binder.setPrintFormat(size, type, align);
-		binder.printTest("您好世界！");
+		// binder.setPrintFormat(size, type, align);
+		// binder.printTest("您好世界！");
+		// binder.setPrintFormat(0, 0, 0);
+		// binder.printTest("\n");
 	}
 }

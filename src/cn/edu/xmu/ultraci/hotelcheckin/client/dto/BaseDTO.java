@@ -2,7 +2,7 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.dto;
 
 import java.io.Serializable;
 
-import cn.edu.xmu.ultraci.hotelcheckin.client.constant.ErrorCode;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 
 /**
  * 基本响应结构
@@ -17,7 +17,7 @@ public class BaseDTO implements Serializable {
 	private Long timestamp;
 
 	public BaseDTO() {
-		this.setResult(ErrorCode.OK);
+		this.setResult(Code.ERRORCODE_OK);
 		this.setTimestamp(System.currentTimeMillis());
 	}
 

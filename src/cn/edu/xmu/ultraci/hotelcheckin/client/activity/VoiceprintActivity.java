@@ -23,8 +23,7 @@ public class VoiceprintActivity extends BaseActivity {
 	private VoiceprintReceiver receiver;
 
 	private String action;
-	private String uid;
-	private String pwd;
+	private Bundle extras;
 
 	private ImageView[] ivPwd = new ImageView[8];
 	private ProgressBar pbVolume;
@@ -34,7 +33,7 @@ public class VoiceprintActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		action = getIntent().getStringExtra("action");
-		uid = getIntent().getStringExtra("uid");
+		extras = getIntent().getBundleExtra("extras");
 
 		initView();
 	}
@@ -100,7 +99,8 @@ public class VoiceprintActivity extends BaseActivity {
 	 * 获取并显示声纹密码
 	 */
 	public void showPwd() {
-		pwd = getThirdpartyServiceBinder().getVoiceprintPassword();
+		String pwd = getThirdpartyServiceBinder().getVoiceprintPassword();
+		extras.putString("pwd", pwd);
 		for (int i = 0; i < 8; i++) {
 			switch (pwd.charAt(i)) {
 			case '0':
@@ -143,12 +143,13 @@ public class VoiceprintActivity extends BaseActivity {
 			switch (intent.getAction()) {
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
 				showPwd();
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT);
+				getThirdpartyServiceBinder()
+						.synthesicSpeech(String.format(TTS.VOICEPRINT_HINT, extras.getString("name")));
 				break;
 			case Broadcast.IFLYTEK_SYNTHESIS_OK:
 				// 待语音播放完毕后才开始验证过程
 				getMiscServiceBinder().playEffect(R.raw.beep);
-				getThirdpartyServiceBinder().verifyVoiceprint(uid, pwd);
+				getThirdpartyServiceBinder().verifyVoiceprint(extras.getString("uid"), extras.getString("pwd"));
 				break;
 			case Broadcast.IFLYTEK_RECORD_START:
 				pbVolume.setVisibility(View.VISIBLE);
@@ -168,25 +169,24 @@ public class VoiceprintActivity extends BaseActivity {
 					finish();
 					break;
 				case Action.CLIENT_LOGOUT:
-					VoiceprintActivity.this.setResult(RESULT_OK, null);
+					VoiceprintActivity.this.setResult(RESULT_OK);
 					finish();
 					break;
 				}
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_VOICE:
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_VOICE);
 				showPwd();
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_VOICE);
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_TEXT:
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_TEXT);
 				showPwd();
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_TEXT);
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_OTHER:
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_OTHER);
 				showPwd();
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_OTHER);
 				break;
 			}
 		}
-
 	}
 }

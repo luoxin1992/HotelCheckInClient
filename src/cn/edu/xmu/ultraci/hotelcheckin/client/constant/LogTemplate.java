@@ -38,11 +38,12 @@ public class LogTemplate {
 	public static final String CORE_QUERY_MEMBER_NO_SUCH_CARD = "查询会员信息失败(%s)，无此会员";
 	public static final String CORE_QUERY_TYPE_OK = "查询房型信息成功，共%s种";
 	public static final String CORE_QUERY_FLOOR_OK = "查询楼层信息成功，共%s层";
-	public static final String CORE_QUERY_STATUS_OK = "查询房态信息成功，供%s间";
+	public static final String CORE_QUERY_STATUS_OK = "查询房态信息成功，共%s间";
 	public static final String CORE_QUERY_ROOM_OK = "查询房间信息成功(%s)";
 	public static final String CORE_QUERY_ROOM_NO_CHECKIN = "查询房间信息失败(%s)，房间未入住";
 	public static final String CORE_QUERY_ROOM_NO_SUCH_CARD = "查询房间信息失败(%s)，无此房间";
-
+	public static final String CORE_QUERY_INFO_OK = "查询其他信息成功";
+	
 	public static final String CORE_GUEST_OK = "提交散客信息成功(%s)";
 	public static final String CORE_CHECKIN_OK = "办理入住手续成功(%s)";
 	public static final String CORE_EXTENSION_OK = "办理续住手续成功(%s)";

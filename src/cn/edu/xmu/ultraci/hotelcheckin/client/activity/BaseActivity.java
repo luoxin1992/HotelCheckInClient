@@ -1,6 +1,8 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +19,7 @@ import android.widget.TextClock;
 import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.LogTemplate;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.CoreService;
 import cn.edu.xmu.ultraci.hotelcheckin.client.service.CoreService.CoreServiceBinder;
@@ -35,10 +38,6 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
  * 其他：加载提示框&出错提示框
  * </ul>
  * 
- * @author LuoXin
- *
- */
-/**
  * @author LuoXin
  *
  */
@@ -62,11 +61,33 @@ public abstract class BaseActivity extends Activity {
 	private LinearLayout llMain;
 	private LinearLayout llBottom;
 	private TextView tvNotice;
+	private AlertDialog.Builder adBuilder;
+	private ProgressDialog pdWaiting;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_base);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
 	}
 
 	@Override
@@ -258,24 +279,42 @@ public abstract class BaseActivity extends Activity {
 	}
 
 	/**
-	 * 显示出错提示框
+	 * 显示消息提示框
+	 * 
+	 * @param resId
+	 *            提示框类型(图片资源ID)
+	 * @param msg1
+	 *            提示文本1
+	 * @param msg2
+	 *            提示文本2
 	 */
-	public void showErrorDialog() {
-
+	public void showDialog(int resId, String msg1, String msg2) {
+		Intent intent = new Intent(this, DialogActivity.class);
+		intent.putExtra("resId", resId);
+		intent.putExtra("msg1", msg1);
+		intent.putExtra("msg2", msg2);
+		startActivityForResult(intent, Code.POPUP_DIALOG);
 	}
 
 	/**
 	 * 显示加载提示框
 	 */
-	public void showProcessDialog() {
-
+	public void showProcess() {
+		if (pdWaiting == null) {
+			pdWaiting = new ProgressDialog(this);
+			pdWaiting.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pdWaiting.setMessage(getString(R.string.tv_waiting));
+			pdWaiting.setCancelable(false);
+			pdWaiting.setCanceledOnTouchOutside(false);
+		}
+		pdWaiting.show();
 	}
 
 	/**
 	 * 隐藏加载提示框
 	 */
-	public void dismissProcessDialog() {
-
+	public void dismissProcess() {
+		pdWaiting.dismiss();
 	}
 
 	/**

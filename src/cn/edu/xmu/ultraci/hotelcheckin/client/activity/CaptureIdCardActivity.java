@@ -72,7 +72,7 @@ public class CaptureIdCardActivity extends BaseActivity {
 	}
 
 	private void initView() {
-		initView(true, getTitle().toString(), true, 60, R.layout.activity_capture_id_card, false);
+		setContent(true, getTitle().toString(), true, 60, R.layout.activity_capture_id_card, false);
 
 		activity_captureidcard_sv_photo = (SurfaceView) findViewById(R.id.activity_captureidcard_sv_photo);
 		surfaceHolder = activity_captureidcard_sv_photo.getHolder();
@@ -123,7 +123,7 @@ public class CaptureIdCardActivity extends BaseActivity {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
 		filter.addAction(Broadcast.CORE_FILE_UPLOAD_OK);
-		filter.addAction(Broadcast.CORE_FILE_UPLOAD_FAIL);
+		filter.addAction(Broadcast.CORE_FILE_NOT_FOUND);
 		receiver = new CaptureIdCardReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
@@ -161,8 +161,8 @@ public class CaptureIdCardActivity extends BaseActivity {
 				bos.flush();
 				bos.close();
 				scanFileToPhotoAlbum(file.getAbsolutePath());
-				Toast.makeText(CaptureIdCardActivity.this, "[Test] Photo take and store in" + file.toString(),
-						Toast.LENGTH_LONG).show();
+//				Toast.makeText(CaptureIdCardActivity.this, "[Test] Photo take and store in" + file.toString(),
+//						Toast.LENGTH_LONG).show();
 
 				//上传照片
 				getCoreServiceBinder().upload("idcard", file.getAbsolutePath());
@@ -283,7 +283,7 @@ public class CaptureIdCardActivity extends BaseActivity {
 			switch (intent.getAction()) {
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
 				// 播放提示音
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.CAPTURE_ID_CARD);
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.CAPTURE_ID_CARD_HINT);
 				break;
 			case Broadcast.CORE_FILE_UPLOAD_OK:
 				newIntent = new Intent(CaptureIdCardActivity.this, GuestActivity.class);
@@ -291,7 +291,7 @@ public class CaptureIdCardActivity extends BaseActivity {
 				startActivity(newIntent);
 				finish();
 				break;
-			case Broadcast.CORE_FILE_UPLOAD_FAIL:
+			case Broadcast.CORE_FILE_NOT_FOUND:
 				break;
 			}
 		}
