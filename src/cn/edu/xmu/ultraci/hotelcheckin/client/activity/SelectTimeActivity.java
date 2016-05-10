@@ -13,6 +13,7 @@ import android.os.Bundle;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
@@ -55,6 +56,18 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 		unbindService();
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Code.POPUP_DIALOG) {
+			if (resultCode == RESULT_OK) {
+
+			} else {
+
+			}
+			return;
+		}
+	}
+
 	public void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
@@ -90,13 +103,12 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 			newIntent = new Intent(this, SelectRoomActivity.class);
 			break;
 		case Action.CLIENT_EXTENSION:
-			newIntent = new Intent(SelectTimeActivity.this, PayActivity.class);
+			newIntent = new Intent(SelectTimeActivity.this, RoomInfoActivity.class);
 			break;
 		}
 		newIntent.putExtra("action", action);
 		newIntent.putExtra("extras", extras);
 		startActivity(newIntent);
-		finish();
 	}
 
 	class SelectTimeReceiver extends BroadcastReceiver {

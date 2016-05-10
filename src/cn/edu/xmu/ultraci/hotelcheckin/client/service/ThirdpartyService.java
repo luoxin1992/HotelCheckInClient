@@ -22,7 +22,6 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.LogTemplate;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.StringUtil;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
-import cn.edu.xmu.ultraci.hotelcheckin.client.util.TimeUtil;
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
 
@@ -280,7 +279,7 @@ public class ThirdpartyService extends Service {
 		// 设置音频保存路径
 		mSynthesizer.setParameter(SpeechConstant.AUDIO_FORMAT, "pcm");
 		mSynthesizer.setParameter(SpeechConstant.TTS_AUDIO_PATH,
-				getCacheDir() + "/iflytek/tts/" + TimeUtil.getCurrentTime() + ".pcm");
+				getCacheDir() + "/iflytek/tts/" + System.currentTimeMillis() + ".pcm");
 	}
 
 	/**
@@ -302,7 +301,7 @@ public class ThirdpartyService extends Service {
 		mVerifier.setParameter(SpeechConstant.ISV_PWD, pwd);
 		// 设置声纹录音保存路径
 		mVerifier.setParameter(SpeechConstant.ISV_AUDIO_PATH,
-				getCacheDir() + "/iflytek/isv/" + TimeUtil.getCurrentTime() + ".pcm");
+				getCacheDir() + "/iflytek/isv/" + System.currentTimeMillis() + ".pcm");
 		// mVerifier.setParameter(SpeechConstant.AUDIO_SOURCE,
 		// MediaRecorder.AudioSource.VOICE_RECOGNITION + "");
 	}

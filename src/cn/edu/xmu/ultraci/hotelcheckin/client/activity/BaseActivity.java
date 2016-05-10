@@ -307,14 +307,18 @@ public abstract class BaseActivity extends Activity {
 			pdWaiting.setCancelable(false);
 			pdWaiting.setCanceledOnTouchOutside(false);
 		}
-		pdWaiting.show();
+		if (!pdWaiting.isShowing()) {
+			pdWaiting.show();
+		}
 	}
 
 	/**
 	 * 隐藏加载提示框
 	 */
 	public void dismissProcess() {
-		pdWaiting.dismiss();
+		if (pdWaiting.isShowing()) {
+			pdWaiting.dismiss();
+		}
 	}
 
 	/**

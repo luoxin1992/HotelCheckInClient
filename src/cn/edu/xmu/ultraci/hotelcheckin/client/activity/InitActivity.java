@@ -65,14 +65,20 @@ public class InitActivity extends BaseActivity {
 		setContent(false, null, false, 0, R.layout.activity_init, false);
 	}
 
-	public void toNextView() {
+	public boolean isInitOk() {
 		if (++eventCounter >= 5) {
-			Intent intent = new Intent(InitActivity.this, SwipeCardActivity.class);
-			intent.putExtra("action", Action.CLIENT_LOGIN);
-			intent.putExtra("extras", new Bundle());
-			startActivity(intent);
-			finish();
+			return true;
+		} else {
+			return false;
 		}
+	}
+
+	public void toMainActivity() {
+		Intent intent = new Intent(InitActivity.this, SwipeCardActivity.class);
+		intent.putExtra("action", Action.CLIENT_LOGIN);
+		intent.putExtra("extras", new Bundle());
+		startActivity(intent);
+		finish();
 	}
 
 	class InitReceiver extends BroadcastReceiver {
@@ -91,11 +97,15 @@ public class InitActivity extends BaseActivity {
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.WELCOME);
 				break;
 			case Broadcast.IFLYTEK_SYNTHESIS_OK:
-				toNextView();
+				if (isInitOk()) {
+					toMainActivity();
+				}
 				break;
 			case Broadcast.CORE_INIT_OK:
 				SystemUtil.setPreferences(InitActivity.this, "announcement", intent.getStringExtra("announcement"));
-				toNextView();
+				if (isInitOk()) {
+					toMainActivity();
+				}
 				break;
 			case Broadcast.CORE_QUERY_INFO_OK:
 				InfoDTO retModel = (InfoDTO) intent.getSerializableExtra("retModel");
@@ -103,21 +113,31 @@ public class InitActivity extends BaseActivity {
 				SystemUtil.setPreferences(InitActivity.this, "address", retModel.getContent().get("address"));
 				SystemUtil.setPreferences(InitActivity.this, "telephone", retModel.getContent().get("telephone"));
 				SystemUtil.setPreferences(InitActivity.this, "notice", retModel.getContent().get("notice"));
-				toNextView();
+				if (isInitOk()) {
+					toMainActivity();
+				}
 				break;
 			case Broadcast.MISC_BLUETOOTH_NONSUPPORT:
+				// TODO 弹对话框提示不支持NFC
 				break;
 			case Broadcast.MISC_BLUETOOTH_DISABLE:
+				// TODO 弹对话框提示启动蓝牙
 				break;
 			case Broadcast.MISC_BLUETOOTH_OK:
-				toNextView();
+				if (isInitOk()) {
+					toMainActivity();
+				}
 				break;
 			case Broadcast.MISC_NFC_NONSUPPORT:
+				// TODO 弹对话框提示不支持NFC
 				break;
 			case Broadcast.MISC_NFC_DISABLE:
+				// TODO 弹对话框提示启动NFC
 				break;
 			case Broadcast.MISC_NFC_OK:
-				toNextView();
+				if (isInitOk()) {
+					toMainActivity();
+				}
 				break;
 			case Broadcast.CORE_SERVER_REQUEST_FAIL:
 			case Broadcast.CORE_SERVER_PROCESS_FAIL:

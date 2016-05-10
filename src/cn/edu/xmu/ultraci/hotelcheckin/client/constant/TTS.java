@@ -36,7 +36,7 @@ public class TTS {
 	public static final String GUEST_HINT = "请验证您的手机号码。";
 
 	// 支付界面
-	public static final String PAY_HINT = "请核对屏幕上显示信息准确无误。然后，扫描左侧二维码完成支付。";
+	public static final String PAY_HINT = "请您扫描屏幕上的二维码完成支付。";
 
 	// 选择时间界面
 	public static final String SELECT_TIME_HINT = "请选择您的预离时间。";
@@ -45,6 +45,9 @@ public class TTS {
 	public static final String SELECT_ROOM_HINT = "请选择您的意向房间，您可以通过屏幕右侧";
 
 	// 查看房间信息界面
+	public static final String ROOM_INFO_HINT = "请您核对屏幕上显示信息准确无误。";
+
+	// TODO 对话框
 	public static final String ROOM_INFO_EXTENSION_HINT = "请确认要办理续住的房间信息。";
 	public static final String ROOM_INFO_CHECKOUT_HINT = "请确认要办理退房的房间信息。";
 	public static final String ROOM_INFO_CHECKOUT_NEED_PAY = "您的房间已经欠费，请联系前台。";

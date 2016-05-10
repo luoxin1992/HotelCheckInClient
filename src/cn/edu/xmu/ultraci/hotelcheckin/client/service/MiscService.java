@@ -3,7 +3,6 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.service;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -13,6 +12,7 @@ import android.content.Intent;
 import android.media.SoundPool;
 import android.nfc.NfcAdapter;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.util.SparseArray;
@@ -266,7 +266,7 @@ public class MiscService extends Service {
 		}
 	}
 
-	public void printTicket(final Map<String, String> content) {
+	public void printTicket(final Bundle extras) {
 		new Thread() {
 			@Override
 			public void run() {
@@ -285,18 +285,18 @@ public class MiscService extends Service {
 				printText("--------------------------------");
 				// 客人信息（姓名、电话）
 				setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
-				printText("姓名：" + content.get("name"));
-				printText("电话：" + content.get("telephone"));
+				printText("姓名：" + extras.getString("name"));
+				printText("电话：" + extras.getString("telephone"));
 				// 空行
 				setPrintFormat(0, 0, 0);
 				printText("\n");
 				// 房间信息（房号、房型、房价、入住、预离）
 				setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
-				printText("房号：" + content.get("room"));
-				printText("房型：" + content.get("type"));
-				printText("房价：" + content.get("price"));
-				printText("入住：" + content.get("checkin"));
-				printText("预离：" + content.get("checkout"));
+				printText("房号：" + extras.getString("room"));
+				printText("房型：" + extras.getString("type"));
+				printText("房价：" + extras.getString("price"));
+				printText("入住：" + extras.getString("checkin"));
+				printText("预离：" + extras.getString("checkout"));
 				// 分割线
 				setPrintFormat(0, 0, 0);
 				printText("--------------------------------");
@@ -330,8 +330,8 @@ public class MiscService extends Service {
 			MiscService.this.playEffect(resId);
 		}
 
-		public void printTicket(Map<String, String> content) {
-			MiscService.this.printTicket(content);
+		public void printTicket(Bundle extras) {
+			MiscService.this.printTicket(extras);
 		}
 	}
 }

@@ -58,7 +58,7 @@
     <string name="btn_reset">清空</string>
     <string name="btn_delete">删除</string>
     <string name="btn_captcha">获取验证码</string>
-    <string name="btn_submit">确定</string>
+    <string name="btn_submit">提交验证</string>
     <string name="et_mobile">手机号</string>
     <string name="et_captcha">验证码</string>
 

@@ -24,7 +24,6 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
-import cn.edu.xmu.ultraci.hotelcheckin.client.util.TimeUtil;
 
 /**
  * 拍摄身份证界面
@@ -144,13 +143,13 @@ public class CaptureIdCardActivity extends BaseActivity {
 	Camera.PictureCallback jpegPictureCallback = new Camera.PictureCallback() {
 		@Override
 		public void onPictureTaken(byte[] arg0, Camera arg1) {
-			//保存照片
+			// 保存照片
 			// String fileName =
 			// Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString()
 			// + File.separator + "PicTest_" + System.currentTimeMillis() +
 			// ".jpg";
 			File file = new File(getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES),
-					TimeUtil.getCurrentTime() + ".jpg");
+					System.currentTimeMillis() + ".jpg");
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdir();
 			}
@@ -160,11 +159,11 @@ public class CaptureIdCardActivity extends BaseActivity {
 				bos.write(arg0);
 				bos.flush();
 				bos.close();
-				scanFileToPhotoAlbum(file.getAbsolutePath());
-//				Toast.makeText(CaptureIdCardActivity.this, "[Test] Photo take and store in" + file.toString(),
-//						Toast.LENGTH_LONG).show();
+				// Toast.makeText(CaptureIdCardActivity.this, "[Test] Photo take
+				// and store in" + file.toString(),
+				// Toast.LENGTH_LONG).show();
 
-				//上传照片
+				// 上传照片
 				getCoreServiceBinder().upload("idcard", file.getAbsolutePath());
 			} catch (Exception e) {
 				Toast.makeText(CaptureIdCardActivity.this, "Picture Failed" + e.toString(), Toast.LENGTH_LONG).show();
@@ -172,16 +171,6 @@ public class CaptureIdCardActivity extends BaseActivity {
 		};
 	};
 
-	public void scanFileToPhotoAlbum(String path) {
-
-		MediaScannerConnection.scanFile(CaptureIdCardActivity.this, new String[] { path }, null,
-				new MediaScannerConnection.OnScanCompletedListener() {
-
-					public void onScanCompleted(String path, Uri uri) {
-						Log.i("TAG", "Finished scanning " + path);
-					}
-				});
-	}
 
 	private final class SurfaceViewCallback implements SurfaceHolder.Callback {
 		public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
@@ -282,7 +271,6 @@ public class CaptureIdCardActivity extends BaseActivity {
 			Intent newIntent;
 			switch (intent.getAction()) {
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
-				// 播放提示音
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.CAPTURE_ID_CARD_HINT);
 				break;
 			case Broadcast.CORE_FILE_UPLOAD_OK:
@@ -295,6 +283,5 @@ public class CaptureIdCardActivity extends BaseActivity {
 				break;
 			}
 		}
-
 	}
 }
