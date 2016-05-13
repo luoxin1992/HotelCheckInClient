@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
 import android.widget.EditText;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
@@ -58,6 +60,14 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
 		unbindService();
 	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Code.CHANGE_UI && resultCode == RESULT_OK) {
+			setResult(RESULT_OK);
+			finish();
+		}
+	}
 
 	public void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
@@ -80,7 +90,9 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 		btnCaptcha = (Button) findViewById(R.id.btn_captcha);
 		btnSubmit = (Button) findViewById(R.id.btn_submit);
 
+		etMobile.setInputType(InputType.TYPE_NULL);
 		etMobile.setOnFocusChangeListener(this);
+		etCaptcha.setInputType(InputType.TYPE_NULL);
 		etCaptcha.setOnFocusChangeListener(this);
 	}
 

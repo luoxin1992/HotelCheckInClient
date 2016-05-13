@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Toast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
@@ -32,6 +33,9 @@ public class CaptureIdCardActivity extends BaseActivity {
 	private static final String TAG = CaptureIdCardActivity.class.getSimpleName();
 
 	private CaptureIdCardReceiver receiver;
+
+	private String action;
+	private Bundle extras;
 
 	// Camera object
 	private Camera mCamera;
@@ -45,6 +49,10 @@ public class CaptureIdCardActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		action = getIntent().getStringExtra("action");
+		extras = getIntent().getBundleExtra("extras");
+
 		initView();
 	}
 
@@ -56,18 +64,33 @@ public class CaptureIdCardActivity extends BaseActivity {
 		bindCoreService();
 		bindThirdpartyService();
 	}
-
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		isForeground = true;
+	}
+	
 	@Override
 	protected void onPause() {
 		super.onPause();
+		isForeground = false;
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
 
 		unbindService();
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
 	}
 
 	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Code.CHANGE_UI && resultCode == RESULT_OK) {
+			setResult(RESULT_OK);
+			finish();
+		}
 	}
 
 	private void initView() {
@@ -83,36 +106,6 @@ public class CaptureIdCardActivity extends BaseActivity {
 				// 单击屏幕拍照，并保存图片文件，并跳转activity
 				if (previewing) {
 					mCamera.takePicture(shutterCallback, rawPictureCallback, jpegPictureCallback);
-					// 跳转到拍摄证件照界面
-					// Intent intent = new Intent(CaptureIdCardActivity.this,
-					// GuestActivity.class);
-					//
-					// String enterTime =
-					// getIntent().getStringExtra("enterTime");
-					// String exitTime = getIntent().getStringExtra("exitTime");
-					// String selected_room_name =
-					// getIntent().getStringExtra("selected_room_name");
-					// String selected_floor_name =
-					// getIntent().getStringExtra("selected_floor_name");
-					// Double room_price =
-					// getIntent().getDoubleExtra("room_price", 0);
-					// String room_type =
-					// getIntent().getStringExtra("room_type");
-					// String user_phone =
-					// getIntent().getStringExtra("user_phone");
-					//
-					// intent.putExtra("FromWhere", "tourist_checkin");
-					// intent.putExtra("enterTime", enterTime);
-					// intent.putExtra("exitTime", exitTime);
-					// intent.putExtra("selected_floor_name",
-					// selected_floor_name);
-					// intent.putExtra("selected_room_name",
-					// selected_room_name);
-					// intent.putExtra("room_price", room_price);
-					// intent.putExtra("room_type", room_type);
-					// intent.putExtra("user_phone", user_phone);
-					// startActivity(intent);
-					// finish();
 				}
 			}
 		});
@@ -121,8 +114,11 @@ public class CaptureIdCardActivity extends BaseActivity {
 	public void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
-		filter.addAction(Broadcast.CORE_FILE_UPLOAD_OK);
+		filter.addAction(Broadcast.IFLYTEK_SYNTHESIS_OK);
+		filter.addAction(Broadcast.CORE_SERVER_REQUEST_FAIL);
+		filter.addAction(Broadcast.CORE_SERVER_PROCESS_FAIL);
 		filter.addAction(Broadcast.CORE_FILE_NOT_FOUND);
+		filter.addAction(Broadcast.CORE_FILE_UPLOAD_OK);
 		receiver = new CaptureIdCardReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
@@ -143,34 +139,24 @@ public class CaptureIdCardActivity extends BaseActivity {
 	Camera.PictureCallback jpegPictureCallback = new Camera.PictureCallback() {
 		@Override
 		public void onPictureTaken(byte[] arg0, Camera arg1) {
-			// 保存照片
-			// String fileName =
-			// Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString()
-			// + File.separator + "PicTest_" + System.currentTimeMillis() +
-			// ".jpg";
+			showProcess();
 			File file = new File(getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES),
 					System.currentTimeMillis() + ".jpg");
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdir();
 			}
-
 			try {
 				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
 				bos.write(arg0);
 				bos.flush();
 				bos.close();
-				// Toast.makeText(CaptureIdCardActivity.this, "[Test] Photo take
-				// and store in" + file.toString(),
-				// Toast.LENGTH_LONG).show();
-
 				// 上传照片
 				getCoreServiceBinder().upload("idcard", file.getAbsolutePath());
 			} catch (Exception e) {
-				Toast.makeText(CaptureIdCardActivity.this, "Picture Failed" + e.toString(), Toast.LENGTH_LONG).show();
+				e.printStackTrace();
 			}
 		};
 	};
-
 
 	private final class SurfaceViewCallback implements SurfaceHolder.Callback {
 		public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
@@ -268,18 +254,40 @@ public class CaptureIdCardActivity extends BaseActivity {
 	class CaptureIdCardReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Intent newIntent;
+
 			switch (intent.getAction()) {
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.CAPTURE_ID_CARD_HINT);
 				break;
+			case Broadcast.IFLYTEK_SYNTHESIS_OK:
+				if (!isForeground) {
+					dismissDialog();
+				}
+				if (isChangingUI) {
+					isChangingUI = false;
+					Intent newIntent;
+					newIntent = new Intent(CaptureIdCardActivity.this, GuestActivity.class);
+					newIntent.putExtra("action", action);
+					newIntent.putExtra("extras", extras);
+					startActivityForResult(newIntent, Code.CHANGE_UI);
+				}
+				break;
 			case Broadcast.CORE_FILE_UPLOAD_OK:
-				newIntent = new Intent(CaptureIdCardActivity.this, GuestActivity.class);
-				newIntent.putExtra("filename", intent.getStringExtra("filename"));
-				startActivity(newIntent);
-				finish();
+				dismissProcess();
+				isChangingUI = true;
+				// 身份证照片上传成功
+				extras.putString("idcard", intent.getStringExtra("filename"));
+				// 弹出对话框
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.CAPTURE_ID_CARD_UPLOADED);
+				showDialog(R.drawable.warn, TTS.CAPTURE_ID_CARD_UPLOADED);
 				break;
 			case Broadcast.CORE_FILE_NOT_FOUND:
+			case Broadcast.CORE_SERVER_PROCESS_FAIL:
+			case Broadcast.CORE_SERVER_REQUEST_FAIL:
+				dismissProcess();
+				// 内部错误
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.INTERNAL_ERROR);
+				showDialog(R.drawable.warn, TTS.INTERNAL_ERROR);
 				break;
 			}
 		}

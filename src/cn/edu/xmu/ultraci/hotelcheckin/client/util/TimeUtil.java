@@ -106,4 +106,17 @@ public class TimeUtil {
 			}
 		}
 	}
+
+	/**
+	 * 判断给定时间与当前时间只差是否超出指定阈值
+	 * 
+	 * @param time
+	 *            时间
+	 * @param threshold
+	 *            阈值(秒)
+	 * @return 判断结果
+	 */
+	public static boolean timeIntervalLimited(String time, long threshold) {
+		return (System.currentTimeMillis() - parseDateTime(time) >= threshold * 1000);
+	}
 }

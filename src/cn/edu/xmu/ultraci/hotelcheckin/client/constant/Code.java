@@ -8,7 +8,7 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.constant;
  */
 public class Code {
 	// 客户端Activity跳转请求码
-	public static final int NEXT_ACTIVITY = 1000;
+	public static final int CHANGE_UI = 1000;
 	public static final int POPUP_DIALOG = 2000;
 
 	// 服务端全局返回码

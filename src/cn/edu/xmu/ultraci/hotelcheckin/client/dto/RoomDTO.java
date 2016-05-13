@@ -8,6 +8,7 @@ public class RoomDTO extends BaseDTO implements Serializable {
 	private Integer id;
 	private String name;
 	private String type;
+	private Double price;
 	private String mobile;
 	private String checkin;
 	private String checkout;
@@ -34,6 +35,14 @@ public class RoomDTO extends BaseDTO implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
 	}
 
 	public String getMobile() {

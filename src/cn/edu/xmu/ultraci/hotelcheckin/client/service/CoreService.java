@@ -435,17 +435,20 @@ public class CoreService extends Service {
 			@Override
 			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				Log.d(TAG, new String(arg2));
+				Intent newIntent;
 				RoomDTO retModel = JSON.parseObject(new String(arg2), RoomDTO.class);
 				switch (retModel.getResult()) {
 				case Code.ERRORCODE_OK:
 					Log.i(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_OK, cardid));
-					Intent intent = new Intent(Broadcast.CORE_QUERY_ROOM_OK);
-					intent.putExtra("retModel", retModel);
-					SystemUtil.sendLocalBroadcast(CoreService.this, intent);
+					newIntent = new Intent(Broadcast.CORE_QUERY_ROOM_OK);
+					newIntent.putExtra("retModel", retModel);
+					SystemUtil.sendLocalBroadcast(CoreService.this, newIntent);
 					break;
 				case Code.ERRORCODE_QUERY_ROOM_NO_CHECK_IN:
 					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_NO_CHECKIN, cardid));
-					SystemUtil.sendLocalBroadcast(CoreService.this, new Intent(Broadcast.CORE_QUERY_ROOM_NO_CHECKIN));
+					newIntent = new Intent(Broadcast.CORE_QUERY_ROOM_NO_CHECKIN);
+					newIntent.putExtra("retModel", retModel);
+					SystemUtil.sendLocalBroadcast(CoreService.this, newIntent);
 					break;
 				case Code.ERRORCODE_QUERY_ROOM_NO_SUCH_CARD:
 					Log.w(TAG, String.format(LogTemplate.CORE_QUERY_ROOM_NO_SUCH_CARD, cardid));

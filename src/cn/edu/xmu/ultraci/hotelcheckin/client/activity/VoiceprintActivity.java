@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
@@ -53,11 +54,6 @@ public class VoiceprintActivity extends BaseActivity {
 
 		unbindService();
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
 	}
 
 	/**
@@ -184,7 +180,7 @@ public class VoiceprintActivity extends BaseActivity {
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_OTHER:
 				showPwd();
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_OTHER);
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_LIMITED);
 				break;
 			}
 		}

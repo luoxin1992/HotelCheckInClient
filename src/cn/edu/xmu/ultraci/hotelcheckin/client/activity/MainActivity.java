@@ -9,6 +9,7 @@ import android.view.View;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
 /**
@@ -35,6 +36,14 @@ public class MainActivity extends BaseActivity {
 	protected void onStop() {
 		super.onStop();
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Code.CHANGE_UI && resultCode == RESULT_OK) {
+			setResult(RESULT_OK);
+			finish();
+		}
 	}
 
 	public void registerReceiver() {

@@ -1,7 +1,6 @@
 package cn.edu.xmu.ultraci.hotelcheckin.client.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextClock;
 import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
@@ -46,6 +46,10 @@ public abstract class BaseActivity extends Activity {
 
 	private Handler mHandler;
 
+	// 标志位：标识当前UI是否在前台、是否可以切换UI
+	protected boolean isForeground = false;
+	protected boolean isChangingUI = false;
+
 	private ServiceConnection mCoreServConn;
 	private ServiceConnection mMiscServConn;
 	private ServiceConnection mThirdpartyServConn;
@@ -61,7 +65,6 @@ public abstract class BaseActivity extends Activity {
 	private LinearLayout llMain;
 	private LinearLayout llBottom;
 	private TextView tvNotice;
-	private AlertDialog.Builder adBuilder;
 	private ProgressDialog pdWaiting;
 
 	@Override
@@ -160,9 +163,10 @@ public abstract class BaseActivity extends Activity {
 		if (!hasBottom) {
 			llBottom.setVisibility(View.GONE);
 			// 当前比例配置为顶栏1/9，中间7/9，底栏1/9
+			// TODO 此方法设置的是权重和，不是权重
 			// llMain.setWeightSum((float) (8.0 / 9.0));
 		} else {
-			tvNotice.setText(SystemUtil.getPreferences(this, "notice"));
+			tvNotice.setText(SystemUtil.getPreferences(this, "announcement"));
 		}
 		// 加载中间部分布局
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -283,17 +287,21 @@ public abstract class BaseActivity extends Activity {
 	 * 
 	 * @param resId
 	 *            提示框类型(图片资源ID)
-	 * @param msg1
-	 *            提示文本1
-	 * @param msg2
-	 *            提示文本2
+	 * @param msg
+	 *            提示文本
 	 */
-	public void showDialog(int resId, String msg1, String msg2) {
+	public void showDialog(int resId, String msg) {
 		Intent intent = new Intent(this, DialogActivity.class);
 		intent.putExtra("resId", resId);
-		intent.putExtra("msg1", msg1);
-		intent.putExtra("msg2", msg2);
+		intent.putExtra("msg", msg);
 		startActivityForResult(intent, Code.POPUP_DIALOG);
+	}
+
+	/**
+	 * 隐藏消息提示框
+	 */
+	public void dismissDialog() {
+		finishActivity(Code.POPUP_DIALOG);
 	}
 
 	/**
@@ -336,10 +344,13 @@ public abstract class BaseActivity extends Activity {
 
 		@Override
 		public void run() {
-			if ((countdown--) != 0) {
-				tvCountdown.setText(String.valueOf(countdown));
-			} else {
-				finish();
+			if (isForeground) {
+				if ((countdown--) != 0) {
+					tvCountdown.setText(String.valueOf(countdown));
+				} else {
+					setResult(RESULT_OK);
+					finish();
+				}
 			}
 			mHandler.postDelayed(this, 1000);
 		}

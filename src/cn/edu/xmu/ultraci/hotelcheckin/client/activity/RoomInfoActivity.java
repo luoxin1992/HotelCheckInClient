@@ -11,8 +11,10 @@ import android.widget.TextView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
+import cn.edu.xmu.ultraci.hotelcheckin.client.util.TimeUtil;
 
 /**
  * 房间信息界面
@@ -53,33 +55,47 @@ public class RoomInfoActivity extends BaseActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		isForeground = true;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		isForeground = false;
+	}
+
+	@Override
 	protected void onStop() {
 		super.onStop();
 
 		unbindService();
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
 	}
-
+	
 	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Code.CHANGE_UI && resultCode == RESULT_OK) {
+			setResult(RESULT_OK);
+			finish();
+		}
 	}
 
 	public void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
-		filter.addAction(Broadcast.CORE_SERIVCE_BOUND);
+		filter.addAction(Broadcast.IFLYTEK_SYNTHESIS_OK);
 		filter.addAction(Broadcast.CORE_SERVER_REQUEST_FAIL);
 		filter.addAction(Broadcast.CORE_SERVER_PROCESS_FAIL);
 		filter.addAction(Broadcast.CORE_CHECKOUT_OK);
 		filter.addAction(Broadcast.CORE_CHECKOUT_NEED_PAY);
-		filter.addAction(Broadcast.CORE_QUERY_TYPE_OK);
 		receiver = new RoomInfoReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
 
 	public void initView() {
-		setContent(true, getTitle().toString(), true, 60, R.layout.activity_room_info, false);
+		setContent(true, getTitle().toString(), true, 30, R.layout.activity_room_info, false);
 
 		tvRoom = (TextView) findViewById(R.id.tv_room);
 		tvType = (TextView) findViewById(R.id.tv_type);
@@ -91,7 +107,7 @@ public class RoomInfoActivity extends BaseActivity {
 
 		tvRoom.setText(extras.getString("room"));
 		tvType.setText(extras.getString("type"));
-		tvPrice.setText(extras.getString("price"));
+		tvPrice.setText(String.valueOf(extras.getDouble("price")));
 		tvMobile.setText(extras.getString("mobile"));
 		tvCheckin.setText(extras.getString("checkin"));
 		tvCheckout.setText(extras.getString("checkout"));
@@ -115,12 +131,21 @@ public class RoomInfoActivity extends BaseActivity {
 		case Action.CLIENT_MEMBER_CHECKIN:
 		case Action.CLIENT_GUEST_CHECKIN:
 		case Action.CLIENT_EXTENSION:
+			// 跳转到支付界面
 			Intent intent = new Intent(this, PayActivity.class);
 			intent.putExtra("action", action);
 			intent.putExtra("extras", extras);
-			startActivity(intent);
+			startActivityForResult(intent, Code.CHANGE_UI);
 			break;
 		case Action.CLIENT_CHECKOUT:
+			// 先判断是否可以退房
+			if (TimeUtil.timeIntervalLimited(extras.getString("checkout"), 12 * 60 * 60)) {
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.ROOM_INFO_NEED_PAY);
+				showDialog(R.drawable.warn, TTS.ROOM_INFO_NEED_PAY);
+			} else {
+				// 提交退房信息
+				getCoreServiceBinder().checkout(extras.getString("cardid"));
+			}
 			break;
 		}
 	}
@@ -132,14 +157,25 @@ public class RoomInfoActivity extends BaseActivity {
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.ROOM_INFO_HINT);
 				break;
+			case Broadcast.IFLYTEK_SYNTHESIS_OK:
+				if (!isForeground) {
+					dismissDialog();
+				}
+				break;
 			case Broadcast.CORE_SERVER_REQUEST_FAIL:
 			case Broadcast.CORE_SERVER_PROCESS_FAIL:
+				dismissProcess();
+				// 内部错误
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.INTERNAL_ERROR);
+				showDialog(R.drawable.warn, TTS.INTERNAL_ERROR);
 				break;
 			case Broadcast.CORE_CHECKOUT_OK:
 				dismissProcess();
-				break;
-			case Broadcast.CORE_CHECKOUT_NEED_PAY:
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.ROOM_INFO_CHECKOUT_NEED_PAY);
+				// 退房成功
+				Intent newIntent = new Intent(RoomInfoActivity.this, ResultActivity.class);
+				newIntent.putExtra("action", action);
+				newIntent.putExtra("extras", extras);
+				startActivityForResult(newIntent, Code.CHANGE_UI);
 				break;
 			}
 		}

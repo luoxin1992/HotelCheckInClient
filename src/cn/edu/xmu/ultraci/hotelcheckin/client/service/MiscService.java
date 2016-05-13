@@ -42,7 +42,6 @@ public class MiscService extends Service {
 	// 蓝牙打印机
 	private BluetoothSocket mBluetoothsocket;
 	private OutputStream mOutputStream;
-	private boolean mPrinterConnectedFlag;
 	// 音效池
 	private SoundPool mSoundPool;
 	private SparseArray<Integer> mEffects;
@@ -50,6 +49,8 @@ public class MiscService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
+		initSoundPool();
 	}
 
 	@Override
@@ -71,7 +72,11 @@ public class MiscService extends Service {
 			mSoundPool.release();
 		}
 		// 断开打印机
-		disconnectPrinter();
+		try {
+			disconnectPrinter();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -112,76 +117,74 @@ public class MiscService extends Service {
 		}
 	}
 
+	/**
+	 * 初始化音效池
+	 */
+	private void initSoundPool() {
+		mSoundPool = new SoundPool.Builder().build();
+		mEffects = new SparseArray<>();
+		mEffects.append(R.raw.beep, mSoundPool.load(this, R.raw.beep, 1));
+		mEffects.append(R.raw.ding, mSoundPool.load(this, R.raw.ding, 1));
+	}
+
+	/**
+	 * 播放音效
+	 * 
+	 * @param resId
+	 *            音效资源ID
+	 */
 	public void playEffect(int resId) {
-		if (mSoundPool == null || mEffects == null) {
-			// 初始化音效池
-			mSoundPool = new SoundPool.Builder().build();
-			mEffects = new SparseArray<>();
-			mEffects.append(R.raw.beep, mSoundPool.load(this, R.raw.beep, 1));
-			mEffects.append(R.raw.ding, mSoundPool.load(this, R.raw.ding, 1));
-		}
 		mSoundPool.play(mEffects.get(resId), 1, 1, 0, 0, 1);
 	}
 
 	/**
-	 * 连接打印机
+	 * 连接打印机<br>
+	 * 如有需要，先断开打印机的前一次连接
+	 * 
+	 * @throws IOException
+	 *             打印机通讯错误
 	 */
-	private void connectPrinter() {
-		try {
-			BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(Config.BT_MAC);
-			mBluetoothsocket = device.createRfcommSocketToServiceRecord(Bluetooth.SPP_UUID);
-			mBluetoothsocket.connect();
-			mOutputStream = mBluetoothsocket.getOutputStream();
-			// 连接成功后发送复位指令
-			sendData2Printer(Bluetooth.PRINTER_CMD[0]);
-			// 并标记打印机已连接
-			mPrinterConnectedFlag = true;
-			Log.i(TAG, LogTemplate.MISC_PRINTER_CONN_OK);
-		} catch (IOException e) {
+	private void connectPrinter() throws IOException {
+		if (mBluetoothsocket != null || mOutputStream != null) {
 			disconnectPrinter();
-			SystemUtil.sendLocalBroadcast(MiscService.this, new Intent(Broadcast.MISC_PRINTER_CONN_FAIL));
-			Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_CONN_FAIL, e.getMessage()));
 		}
+		BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(Config.BT_MAC);
+		mBluetoothsocket = device.createRfcommSocketToServiceRecord(Bluetooth.SPP_UUID);
+		mBluetoothsocket.connect();
+		mOutputStream = mBluetoothsocket.getOutputStream();
+		// 连接成功后发送复位指令
+		sendData2Printer(Bluetooth.PRINTER_CMD[0]);
+		Log.i(TAG, LogTemplate.MISC_PRINTER_CONN_OK);
 	}
 
 	/**
 	 * 断开打印机
+	 * 
+	 * @throws IOException
+	 *             打印机通讯错误
 	 */
-	private void disconnectPrinter() {
-		try {
-			if (mOutputStream != null) {
-				mOutputStream.close();
-				mOutputStream = null;
-			}
-			if (mBluetoothsocket != null) {
-				mBluetoothsocket.close();
-				mBluetoothsocket = null;
-			}
-			mPrinterConnectedFlag = false;
-			Log.i(TAG, LogTemplate.MISC_PRINTER_DISCONN_OK);
-		} catch (IOException e) {
-			Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_DISCONN_FAIL, e.getMessage()));
+	private void disconnectPrinter() throws IOException {
+		if (mOutputStream != null) {
+			mOutputStream.close();
+			mOutputStream = null;
 		}
+		if (mBluetoothsocket != null) {
+			mBluetoothsocket.close();
+			mBluetoothsocket = null;
+		}
+		Log.i(TAG, LogTemplate.MISC_PRINTER_DISCONN_OK);
 	}
 
 	/**
-	 * 向打印机发送数据<br>
-	 * 如果打印机未连接，则先尝试连接
+	 * 向打印机发送数据
 	 * 
 	 * @param data
 	 *            数据
+	 * @throws IOException
+	 *             打印机通讯错误
 	 */
-	private void sendData2Printer(byte[] data) {
-		try {
-			if (mPrinterConnectedFlag) {
-				mOutputStream.write(data);
-			}
-		} catch (IOException e) {
-			Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_SEND_FAIL, e.getMessage()));
-			// 与打印机通讯异常时自动重连
-			disconnectPrinter();
-			connectPrinter();
-		}
+	private void sendData2Printer(byte[] data) throws IOException {
+		mOutputStream.write(data);
 	}
 
 	/**
@@ -194,8 +197,10 @@ public class MiscService extends Service {
 	 *            加粗
 	 * @param align
 	 *            对齐
+	 * @throws IOException
+	 *             打印机通讯错误
 	 */
-	public void setPrintFormat(int size, int type, int align) {
+	public void setPrintFormat(int size, int type, int align) throws IOException {
 		switch (size) {
 		case Bluetooth.FONT_1:
 			sendData2Printer(Bluetooth.PRINTER_CMD[2]);
@@ -251,8 +256,10 @@ public class MiscService extends Service {
 	 * 
 	 * @param text
 	 *            文本
+	 * @throws IOException
+	 *             打印机通讯错误
 	 */
-	public void printText(String text) {
+	public void printText(String text) throws IOException {
 		// 要打印的文本后必须有换行符
 		// 打印机才能清空缓冲区
 		if (!text.endsWith("\n")) {
@@ -270,49 +277,54 @@ public class MiscService extends Service {
 		new Thread() {
 			@Override
 			public void run() {
-				// 如有必要先连接打印机
-				if (!mPrinterConnectedFlag) {
+				// 连接打印机
+				try {
 					connectPrinter();
+					// 酒店名称
+					setPrintFormat(Bluetooth.FONT_4, Bluetooth.FONT_BOLD, Bluetooth.ALIGN_CENTER);
+					printText(SystemUtil.getPreferences(MiscService.this, "name"));
+					// 打印时间
+					setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
+					printText(TimeUtil.formatDateTime(System.currentTimeMillis()));
+					// 分割线
+					setPrintFormat(0, 0, 0);
+					printText("--------------------------------");
+					// 客人信息（姓名、电话）
+					setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
+					printText("姓名：" + extras.getString("name"));
+					printText("电话：" + extras.getString("mobile"));
+					// 空行
+					setPrintFormat(0, 0, 0);
+					printText("\n");
+					// 房间信息（房号、房型、房价、入住、预离）
+					setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
+					printText("房号：" + extras.getString("room"));
+					printText("房型：" + extras.getString("type"));
+					printText("房价：" + extras.getDouble("price"));
+					printText("入住：" + extras.getString("checkin"));
+					printText("预离：" + extras.getString("checkout"));
+					// 分割线
+					setPrintFormat(0, 0, 0);
+					printText("--------------------------------");
+					// 宾客须知
+					setPrintFormat(Bluetooth.FONT_1, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
+					printText("宾客须知：" + SystemUtil.getPreferences(MiscService.this, "notice"));
+					// 谢谢惠顾
+					setPrintFormat(Bluetooth.FONT_3, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
+					printText("衷心感谢阁下的光临！");
+					// 酒店信息
+					setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
+					printText(SystemUtil.getPreferences(MiscService.this, "address"));
+					printText(SystemUtil.getPreferences(MiscService.this, "telephone"));
+					// 空行(解决打印机最后出纸长度不足)
+					setPrintFormat(0, 0, 0);
+					printText("\n\n");
+					// 断开打印机
+					disconnectPrinter();
+				} catch (IOException e) {
+					Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_FAIL, e.getMessage()));
+					SystemUtil.sendLocalBroadcast(MiscService.this, new Intent(Broadcast.MISC_PRINTER_FAIL));
 				}
-				// 酒店名称
-				setPrintFormat(Bluetooth.FONT_4, Bluetooth.FONT_BOLD, Bluetooth.ALIGN_CENTER);
-				printText(SystemUtil.getPreferences(MiscService.this, "name"));
-				// 打印时间
-				setPrintFormat(Bluetooth.FONT_1, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
-				printText(TimeUtil.formatDateTime(System.currentTimeMillis()));
-				// 分割线
-				setPrintFormat(0, 0, 0);
-				printText("--------------------------------");
-				// 客人信息（姓名、电话）
-				setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
-				printText("姓名：" + extras.getString("name"));
-				printText("电话：" + extras.getString("telephone"));
-				// 空行
-				setPrintFormat(0, 0, 0);
-				printText("\n");
-				// 房间信息（房号、房型、房价、入住、预离）
-				setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
-				printText("房号：" + extras.getString("room"));
-				printText("房型：" + extras.getString("type"));
-				printText("房价：" + extras.getString("price"));
-				printText("入住：" + extras.getString("checkin"));
-				printText("预离：" + extras.getString("checkout"));
-				// 分割线
-				setPrintFormat(0, 0, 0);
-				printText("--------------------------------");
-				// 宾客须知
-				setPrintFormat(Bluetooth.FONT_1, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
-				printText(SystemUtil.getPreferences(MiscService.this, "notice"));
-				// 谢谢惠顾
-				setPrintFormat(Bluetooth.FONT_3, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
-				printText("衷心感谢阁下的光临！");
-				// 酒店信息
-				setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_CENTER);
-				printText(SystemUtil.getPreferences(MiscService.this, "address"));
-				printText(SystemUtil.getPreferences(MiscService.this, "telephone"));
-				// 空行(解决打印机最后出纸长度不足)
-				setPrintFormat(0, 0, 0);
-				printText("\n");
 			};
 		}.start();
 	}

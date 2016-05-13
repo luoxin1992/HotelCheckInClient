@@ -72,5 +72,5 @@ public class Broadcast {
 	public static final String MISC_NFC_DISABLE = MISC_PREFIX + "nfc.DISABLE";
 	public static final String MISC_NFC_OK = MISC_PREFIX + "nfc.OK";
 	public static final String MISC_PRINTER_OK = MISC_PREFIX + "printer.OK";
-	public static final String MISC_PRINTER_CONN_FAIL = MISC_PREFIX + "printer.CONN_FAIL";
+	public static final String MISC_PRINTER_FAIL = MISC_PREFIX + "printer.FAIL";
 }

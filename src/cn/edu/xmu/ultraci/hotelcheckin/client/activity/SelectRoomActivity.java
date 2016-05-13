@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
+import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.StatusDTO;
 import cn.edu.xmu.ultraci.hotelcheckin.client.dto.StatusDTO.Status;
@@ -73,6 +74,14 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
 		unbindService();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Code.CHANGE_UI && resultCode == RESULT_OK) {
+			setResult(RESULT_OK);
+			finish();
+		}
 	}
 
 	public void registerReceiver() {

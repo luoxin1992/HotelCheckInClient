@@ -21,7 +21,7 @@
         android:orientation="vertical" >
 
         <TextView
-            style="?android:attr/textAppearanceLarge"
+            style="?android:attr/textAppearanceLargeInverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/et_mobile"
@@ -29,17 +29,15 @@
 
         <EditText
             android:id="@id/et_mobile"
-            style="?android:attr/textViewStyle"
+            style="?android:attr/textAppearanceLargeInverse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/edittext"
             android:gravity="center"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:textSize="28sp" />
+            android:singleLine="true" />
 
         <TextView
-            style="?android:attr/textAppearanceLarge"
+            style="?android:attr/textAppearanceLargeInverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -48,14 +46,19 @@
 
         <EditText
             android:id="@id/et_captcha"
-            style="?android:attr/textViewStyle"
+            style="?android:attr/textAppearanceLargeInverse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/edittext"
             android:gravity="center"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:textSize="28sp" />
+            android:inputType="none"
+            android:singleLine="true" />
+
+        <!--
+        style="?android:attr/textViewStyle"
+        android:selectAllOnFocus="true"
+        android:textSize="28sp"
+        -->
 
         <Button
             android:id="@+id/btn_captcha"

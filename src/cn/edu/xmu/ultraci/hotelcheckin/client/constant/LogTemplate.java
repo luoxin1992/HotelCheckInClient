@@ -43,7 +43,7 @@ public class LogTemplate {
 	public static final String CORE_QUERY_ROOM_NO_CHECKIN = "查询房间信息失败(%s)，房间未入住";
 	public static final String CORE_QUERY_ROOM_NO_SUCH_CARD = "查询房间信息失败(%s)，无此房间";
 	public static final String CORE_QUERY_INFO_OK = "查询其他信息成功";
-	
+
 	public static final String CORE_GUEST_OK = "提交散客信息成功(%s)";
 	public static final String CORE_CHECKIN_OK = "办理入住手续成功(%s)";
 	public static final String CORE_EXTENSION_OK = "办理续住手续成功(%s)";
@@ -68,8 +68,10 @@ public class LogTemplate {
 	public static final String MISC_NFC_OK = "NFC正常";
 
 	public static final String MISC_PRINTER_CONN_OK = "打印机连接成功";
+	@Deprecated
 	public static final String MISC_PRINTER_CONN_FAIL = "打印机连接失败(%s)";
 	public static final String MISC_PRINTER_DISCONN_OK = "打印机断开成功";
+	@Deprecated
 	public static final String MISC_PRINTER_DISCONN_FAIL = "打印机断开失败(%s)";
-	public static final String MISC_PRINTER_SEND_FAIL = "打印机通讯错误(%s)";
+	public static final String MISC_PRINTER_FAIL = "打印机通讯错误(%s)";
 }

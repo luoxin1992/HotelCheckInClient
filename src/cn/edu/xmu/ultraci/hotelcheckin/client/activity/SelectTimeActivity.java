@@ -58,13 +58,9 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == Code.POPUP_DIALOG) {
-			if (resultCode == RESULT_OK) {
-
-			} else {
-
-			}
-			return;
+		if (requestCode == Code.CHANGE_UI && resultCode == RESULT_OK) {
+			setResult(RESULT_OK);
+			finish();
 		}
 	}
 
@@ -95,7 +91,7 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 	public void onDateRangeSelected(SelectedDays<CalendarDay> selectedDays) {
 		extras.putString("checkin", selectedDays.getFirst().toString());
 		extras.putString("checkout", selectedDays.getLast().toString());
-
+		// 跳转到选房间界面或确认房间信息界面
 		Intent newIntent = null;
 		switch (action) {
 		case Action.CLIENT_MEMBER_CHECKIN:
@@ -108,7 +104,7 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 		}
 		newIntent.putExtra("action", action);
 		newIntent.putExtra("extras", extras);
-		startActivity(newIntent);
+		startActivityForResult(newIntent, Code.CHANGE_UI);
 	}
 
 	class SelectTimeReceiver extends BroadcastReceiver {

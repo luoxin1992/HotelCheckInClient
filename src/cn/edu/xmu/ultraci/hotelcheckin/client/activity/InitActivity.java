@@ -53,10 +53,13 @@ public class InitActivity extends BaseActivity {
 		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
 		filter.addAction(Broadcast.IFLYTEK_SYNTHESIS_OK);
 		filter.addAction(Broadcast.CORE_INIT_OK);
+		filter.addAction(Broadcast.CORE_QUERY_INFO_OK);
 		filter.addAction(Broadcast.MISC_BLUETOOTH_NONSUPPORT);
 		filter.addAction(Broadcast.MISC_BLUETOOTH_DISABLE);
 		filter.addAction(Broadcast.MISC_NFC_NONSUPPORT);
 		filter.addAction(Broadcast.MISC_NFC_DISABLE);
+		filter.addAction(Broadcast.MISC_BLUETOOTH_OK);
+		filter.addAction(Broadcast.MISC_NFC_OK);
 		receiver = new InitReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}

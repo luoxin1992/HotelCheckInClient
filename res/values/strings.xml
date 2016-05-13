@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">酒店自助入住终端</string>
+    <string name="sans_serif" translatable="false">sans-serif</string>
 
     <!-- 图片描述 -->
     <!-- 基础界面 -->
@@ -34,11 +35,14 @@
     <!-- 支付界面 -->
     <string name="iv_qrcode">支付二维码</string>
 
+    <!-- 结果界面 -->
+    <string name="iv_smile">笑脸</string>
+
     <!-- 关于界面 -->
     <string name="iv_us">关于我们</string>
 
     <!-- 对话框 -->
-    <string name="iv_type">对话类型</string>
+    <string name="iv_type">对话框类型</string>
 
     <!-- 界面文本 -->
     <!-- 初始化界面 -->
@@ -85,11 +89,13 @@
     <string name="tv_total2">元</string>
     <string name="btn_pay">我已支付</string>
 
+    <!-- 结果界面 -->
+    <string name="btn_back">返回</string>
+
     <!-- 关于界面 -->
     <string name="tv_us">此《酒店自助入住终端》是厦门大学信息科学与技术学院“美团点评杯”软件开发大赛的参赛作品。\n\n参赛选手：\n骆欣\t\t计算机科学系\n谢波\t\t计算机科学系\n刘凯\t\t智能科学与技术系\n</string>
 
-    <!-- 对话框 -->
-    <string name="btn_dismiss">确定</string>
+    <!-- 进度对话框 -->
     <string name="tv_waiting">请稍候……</string>
 
     <!-- Activity标题 -->
@@ -102,13 +108,13 @@
     <string name="title_activity_capture_id_card">请拍摄身份证</string>
     <string name="title_activity_guest">请验证手机</string>
     <string name="title_activity_room_info">请确认房间信息</string>
+    <string name="title_activity_result">操作成功</string>
 
     <!-- 测试 -->
     <string name="title_activity_test_voice_service">TestVoiceServiceActivity</string>
     <string name="title_activity_test_core_service">TestCoreServiceActivity</string>
     <string name="title_activity_test_misc_service">TestMiscServiceActivity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="sans_serif" translatable="false">sans-serif</string>
     <string name="title_activity_test_calendar_listview">TestCalendarListviewActivity</string>
 
 </resources>

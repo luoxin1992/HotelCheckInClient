@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
+import cn.edu.xmu.ultraci.hotelcheckin.client.util.TimeUtil;
 
 public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.ViewHolder>
 		implements SimpleMonthView.OnDayClickListener {
@@ -255,12 +256,11 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
 			stringBuilder.append(year);
 			stringBuilder.append('-');
 			// stringBuilder.append(", month: ");
-			stringBuilder.append(month);
+			stringBuilder.append(month + 1);
 			stringBuilder.append('-');
 			// stringBuilder.append(", day: ");
 			stringBuilder.append(day);
 			// stringBuilder.append(" }");
-
 			return stringBuilder.toString();
 		}
 	}
