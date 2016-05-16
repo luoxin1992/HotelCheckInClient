@@ -60,7 +60,7 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
 		unbindService();
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == Code.CHANGE_UI && resultCode == RESULT_OK) {
@@ -71,13 +71,14 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 
 	public void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
-		filter.addAction(Broadcast.CORE_SERVER_REQUEST_FAIL);
-		filter.addAction(Broadcast.CORE_SERVER_PROCESS_FAIL);
-		filter.addAction(Broadcast.CORE_GUEST_OK);
+		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
+		filter.addAction(Broadcast.IFLYTEK_SYNTHESIS_OK);
 		filter.addAction(Broadcast.MOB_CAPTCHA_SMS_SEND);
 		filter.addAction(Broadcast.MOB_CAPTCHA_VERIFY_OK);
 		filter.addAction(Broadcast.MOB_CAPTCHA_VERIFY_FAIL);
-		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
+		filter.addAction(Broadcast.CORE_SERVER_REQUEST_FAIL);
+		filter.addAction(Broadcast.CORE_SERVER_PROCESS_FAIL);
+		filter.addAction(Broadcast.CORE_GUEST_OK);
 		receiver = new GuestReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
@@ -189,14 +190,19 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 
 	public void onCaptchaClick(View v) {
 		String mobile = etMobile.getText().toString().trim();
+		extras.putString("mobile", mobile);
 		// 检查手机号码格式
 		if (!mobile.matches("1[3|4|5|7|8|]\\d{9}")) {
-			// TODO 对话框提示手机号码格式错误
+			getThirdpartyServiceBinder().synthesicSpeech(TTS.GUEST_MOBILE_INVALID);
+			showDialog(R.drawable.warn, TTS.GUEST_MOBILE_INVALID);
 			return;
 		}
 		// 检查上次获取验证码时间
-		if (System.currentTimeMillis() - lastCaptchaTime <= 60 * 1000) {
-			// TODO 对话框提示获取验证码太频繁，还需等待X秒
+		if (System.currentTimeMillis() - lastCaptchaTime <= 30 * 1000) {
+			getThirdpartyServiceBinder().synthesicSpeech(String.format(TTS.GUEST_CAPTCHA_WAITING,
+					30 - (System.currentTimeMillis() - lastCaptchaTime) / 1000));
+			showDialog(R.drawable.warn, String.format(TTS.GUEST_CAPTCHA_WAITING,
+					30 - (System.currentTimeMillis() - lastCaptchaTime) / 1000));
 			return;
 		}
 		// 获取验证码
@@ -210,7 +216,8 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 		String captcha = etCaptcha.getText().toString().trim();
 		// 检查验证码格式
 		if (!captcha.matches("\\d{4}")) {
-			// TODO 对话框提示验证码格式错误
+			getThirdpartyServiceBinder().synthesicSpeech(TTS.GUEST_CAPTCHA_INVALID);
+			showDialog(R.drawable.warn, TTS.GUEST_CAPTCHA_INVALID);
 			return;
 		}
 		// 提交验证码
@@ -247,14 +254,37 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 				break;
 			case Broadcast.CORE_SERVER_REQUEST_FAIL:
 			case Broadcast.CORE_SERVER_PROCESS_FAIL:
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.INTERNAL_ERROR);
+				showDialog(R.drawable.warn, TTS.INTERNAL_ERROR);
+				break;
+			case Broadcast.IFLYTEK_SYNTHESIS_OK:
+				if (!isForeground) {
+					dismissDialog();
+				}
+				if (isChangingUI) {
+					isChangingUI = false;
+					Intent newIntent = new Intent(GuestActivity.this, SelectTimeActivity.class);
+					newIntent.putExtra("action", action);
+					newIntent.putExtra("extras", extras);
+					startActivityForResult(newIntent, Code.CHANGE_UI);
+				}
 				break;
 			case Broadcast.CORE_GUEST_OK:
+				isChangingUI = true;
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.GUEST_CAPTCHA_OK);
+				showDialog(R.drawable.warn, TTS.GUEST_CAPTCHA_OK);
 				break;
 			case Broadcast.MOB_CAPTCHA_SMS_SEND:
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.GUEST_CAPTCHA_SEND);
+				showDialog(R.drawable.warn, TTS.GUEST_CAPTCHA_SEND);
 				break;
 			case Broadcast.MOB_CAPTCHA_VERIFY_OK:
+				getCoreServiceBinder().guest(extras.getString("mobile"), extras.getString("idcard"));
 				break;
 			case Broadcast.MOB_CAPTCHA_VERIFY_FAIL:
+				lastCaptchaTime = 0;
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.GUEST_CAPTCHA_FAIL);
+				showDialog(R.drawable.warn, TTS.GUEST_CAPTCHA_FAIL);
 				break;
 			}
 		}

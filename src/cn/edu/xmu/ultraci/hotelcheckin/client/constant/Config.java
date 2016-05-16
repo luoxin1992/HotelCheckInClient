@@ -13,7 +13,7 @@ public class Config {
 	// public static final String SERVER_IP = "103.37.165.152";
 	// public static final String SERVER_PORT = "8081";
 	// 测试服
-	public static final String SERVER_IP = "10.30.185.177";
+	public static final String SERVER_IP = "10.30.167.221";
 	public static final String SERVER_PORT = "9237";
 
 	// 服务端请求URL

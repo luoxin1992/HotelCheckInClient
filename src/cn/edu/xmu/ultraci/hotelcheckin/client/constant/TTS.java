@@ -40,7 +40,7 @@ public class TTS {
 
 	// 选择房间界面
 	public static final String SELECT_ROOM_HINT = "请选择您的意向房间，您可以通过右侧的复选框进行房型筛选";
-	public static final String SELECT_ROOM_OK = "您选择了%s";
+	public static final String SELECT_ROOM_OK = "您选择了%s房间";
 
 	// 房间信息界面
 	public static final String ROOM_INFO_HINT = "请您核对屏幕上显示信息准确无误";
@@ -49,7 +49,7 @@ public class TTS {
 	// 支付界面
 	public static final String PAY_HINT = "请您扫描屏幕上的二维码完成支付";
 	public static final String PAY_PRINT_OK = "支付成功。小票打印完毕，请沿锯齿撕下";
-	public static final String PAY_PRINT_FAIL = "支付成功。如需补打小票，请联系前台";
+	public static final String PAY_PRINT_FAIL = "支付成功。如需打印小票，请联系前台";
 
 	// 拍摄身份证界面
 	public static final String CAPTURE_ID_CARD_HINT = "请将您的身份证放置在拍摄区域内，然后点击屏幕完成拍照";
@@ -57,6 +57,9 @@ public class TTS {
 
 	// 散客登记界面
 	public static final String GUEST_HINT = "请验证您的手机号码";
+	public static final String GUEST_MOBILE_INVALID = "手机号码格式不正确";
+	public static final String GUEST_CAPTCHA_INVALID = "验证码应为4位数字";
+	public static final String GUEST_CAPTCHA_WAITING = "您获取验证码太频繁，请等待%s秒";
 	public static final String GUEST_CAPTCHA_SEND = "验证码已发送至您的手机，请查收";
 	public static final String GUEST_CAPTCHA_OK = "散客身份验证成功";
 	public static final String GUEST_CAPTCHA_FAIL = "您填写的验证码不正确";

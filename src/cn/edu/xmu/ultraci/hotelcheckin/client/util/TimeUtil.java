@@ -108,15 +108,28 @@ public class TimeUtil {
 	}
 
 	/**
-	 * 判断给定时间与当前时间只差是否超出指定阈值
+	 * 判断给定日期与当前时间只差是否超出指定阈值
 	 * 
-	 * @param time
-	 *            时间
+	 * @param date
+	 *            日期
 	 * @param threshold
 	 *            阈值(秒)
 	 * @return 判断结果
 	 */
-	public static boolean timeIntervalLimited(String time, long threshold) {
-		return (System.currentTimeMillis() - parseDateTime(time) >= threshold * 1000);
+	public static boolean timeIntervalLimited(String date, long threshold) {
+		return (System.currentTimeMillis() - parseDateTime(date, "yyyy-MM-dd") >= threshold * 1000);
+	}
+
+	/**
+	 * 判断两个给定日期的前后关系
+	 * 
+	 * @param date1
+	 *            日期1
+	 * @param date2
+	 *            日期2
+	 * @return true - 日期1早于日期2，false - 日期1晚于日期2
+	 */
+	public static boolean dateEarlyThan(String date1, String date2) {
+		return parseDateTime(date1, "yyyy-MM-dd") - parseDateTime(date2, "yyyy-MM-dd") < 0;
 	}
 }

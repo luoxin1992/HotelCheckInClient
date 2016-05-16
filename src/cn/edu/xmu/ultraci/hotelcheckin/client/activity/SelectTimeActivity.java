@@ -16,6 +16,7 @@ import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
+import cn.edu.xmu.ultraci.hotelcheckin.client.util.TimeUtil;
 
 /**
  * 选时间界面
@@ -89,22 +90,22 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 
 	@Override
 	public void onDateRangeSelected(SelectedDays<CalendarDay> selectedDays) {
+		if (action.equals(Action.CLIENT_EXTENSION)) {
+			// 办理续住时需判断所选时间不早于原定的预离时间
+			if (TimeUtil.dateEarlyThan(selectedDays.getLast().toString(), extras.getString("checkout"))) {
+				getThirdpartyServiceBinder()
+						.synthesicSpeech(String.format(TTS.SELECT_TIME_EARLY, extras.getString("checkout")));
+				showDialog(R.drawable.warn, String.format(TTS.SELECT_TIME_EARLY, extras.getString("checkout")));
+				return;
+			}
+		}
+		// 将入住日期和预离日期放入参数列表
 		extras.putString("checkin", selectedDays.getFirst().toString());
 		extras.putString("checkout", selectedDays.getLast().toString());
-		// 跳转到选房间界面或确认房间信息界面
-		Intent newIntent = null;
-		switch (action) {
-		case Action.CLIENT_MEMBER_CHECKIN:
-		case Action.CLIENT_GUEST_CHECKIN:
-			newIntent = new Intent(this, SelectRoomActivity.class);
-			break;
-		case Action.CLIENT_EXTENSION:
-			newIntent = new Intent(SelectTimeActivity.this, RoomInfoActivity.class);
-			break;
-		}
-		newIntent.putExtra("action", action);
-		newIntent.putExtra("extras", extras);
-		startActivityForResult(newIntent, Code.CHANGE_UI);
+		// 提示用户所选择的日期
+		isChangingUI = true;
+		getThirdpartyServiceBinder().synthesicSpeech(String.format(TTS.SELECT_TIME_OK, extras.getString("checkout")));
+		showDialog(R.drawable.plain, String.format(TTS.SELECT_TIME_OK, extras.getString("checkout")));
 	}
 
 	class SelectTimeReceiver extends BroadcastReceiver {
@@ -113,6 +114,28 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 			switch (intent.getAction()) {
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.SELECT_TIME_HINT);
+				break;
+			case Broadcast.IFLYTEK_SYNTHESIS_OK:
+				if (!isForeground) {
+					dismissDialog();
+				}
+				if (isChangingUI) {
+					isChangingUI = false;
+					// 跳转到选房间界面或确认房间信息界面
+					Intent newIntent = null;
+					switch (action) {
+					case Action.CLIENT_MEMBER_CHECKIN:
+					case Action.CLIENT_GUEST_CHECKIN:
+						newIntent = new Intent(SelectTimeActivity.this, SelectRoomActivity.class);
+						break;
+					case Action.CLIENT_EXTENSION:
+						newIntent = new Intent(SelectTimeActivity.this, RoomInfoActivity.class);
+						break;
+					}
+					newIntent.putExtra("action", action);
+					newIntent.putExtra("extras", extras);
+					startActivityForResult(newIntent, Code.CHANGE_UI);
+				}
 				break;
 			}
 		}
