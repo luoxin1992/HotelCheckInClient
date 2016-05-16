@@ -45,7 +45,6 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 	private List<Map<String, Object>> lvItemLst;
 	private List<Map<String, Object>> gvItemLst;
 
-	private int eventCounter = 0;
 	private List<Type> typeLst;
 	private List<Status> statusLst;
 
@@ -71,13 +70,13 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 	@Override
 	protected void onResume() {
 		super.onResume();
-		isForeground = true;
+		 isForeground = true;
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		isForeground = false;
+		 isForeground = false;
 	}
 
 	@Override
@@ -104,6 +103,7 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 		filter.addAction(Broadcast.CORE_QUERY_TYPE_OK);
 		filter.addAction(Broadcast.CORE_QUERY_STATUS_OK);
 		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
+		filter.addAction(Broadcast.IFLYTEK_SYNTHESIS_OK);
 		receiver = new SelectRoomReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
@@ -117,20 +117,15 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 		gvStatus.setOnItemClickListener(this);
 	}
 
-	public boolean isQueryOk() {
-		if (++eventCounter >= 2) {
-			dismissProcess();
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public void parseTypeDTO(TypeDTO retModel) {
 		// 存储房型信息
 		typeLst = retModel.getTypes();
 		// 添加房型信息到到ListView
-		lvItemLst = new ArrayList<Map<String, Object>>();
+		if (lvItemLst == null) {
+			lvItemLst = new ArrayList<Map<String, Object>>();
+		} else {
+			lvItemLst.clear();
+		}
 		for (Type type : typeLst) {
 			Map<String, Object> item = new HashMap<String, Object>();
 			item.put("id", type.getId());
@@ -153,21 +148,27 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 		// 存储房态信息
 		statusLst = retModel.getStatuses();
 		// 添加房态信息到GridView
-		gvItemLst = new ArrayList<Map<String, Object>>();
+		if (gvItemLst == null) {
+			gvItemLst = new ArrayList<Map<String, Object>>();
+		} else {
+			gvItemLst.clear();
+		}
 		for (Status status : statusLst) {
+			System.out.println(status.getAvailable());
 			Map<String, Object> item = new HashMap<String, Object>();
 			if (status.getAvailable() == 0) {
 				item.put("image", R.drawable.room_normal);
 			} else if (status.getAvailable() == 1) {
-				item.put("image", R.drawable.room_sold);
-			} else {
 				// GridView上不显示被用户筛选掉的房间
-				break;
+				continue;
+			} else {
+				item.put("image", R.drawable.room_sold);
 			}
 			item.put("id", status.getId());
 			item.put("name", status.getName());
 			for (Type type : typeLst) {
 				if (type.getId() == status.getType()) {
+					item.put("type", type.getName());
 					item.put("price", "￥" + type.getPrice());
 					break;
 				}
@@ -193,7 +194,7 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 				sb.append("|");
 			}
 		}
-		return sb.deleteCharAt(sb.length() - 1).toString();
+		return sb.length() == 0 ? "" : sb.deleteCharAt(sb.length() - 1).toString();
 	}
 
 	@Override
@@ -217,7 +218,7 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 				extras.putInt("roomid", (Integer) gvItemLst.get(position).get("id"));
 				extras.putString("room", (String) gvItemLst.get(position).get("name"));
 				extras.putString("type", (String) gvItemLst.get(position).get("type"));
-				extras.putDouble("price", (Double) gvItemLst.get(position).get("price"));
+				extras.putString("price", (String) gvItemLst.get(position).get("price"));
 				// 提示用户所选择的房间
 				isChangingUI = true;
 				getThirdpartyServiceBinder()

@@ -7,8 +7,14 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.constant;
  *
  */
 public class TTS {
-	public static final String WELCOME = "欢迎使用酒店自助入住终端";
 	public static final String INTERNAL_ERROR = "内部错误";
+
+	// 初始化界面
+	public static final String INIT_WELCOME = "欢迎使用酒店自助入住终端";
+	public static final String INIT_BLUETOOTH_NONSUPPORT = "设备不支持蓝牙";
+	public static final String INIT_BLUETOOTH_DISABLE = "请先启用蓝牙";
+	public static final String INIT_NFC_NONSUPPORT = "设备不支持NFC";
+	public static final String INIT_NFC_DISABLE = "请先启用NFC";
 
 	// 刷卡界面
 	public static final String SWIPE_CARD_STAFF_HINT = "请将您的员工卡放置在感应区内";
@@ -62,7 +68,7 @@ public class TTS {
 	public static final String GUEST_CAPTCHA_WAITING = "您获取验证码太频繁，请等待%s秒";
 	public static final String GUEST_CAPTCHA_SEND = "验证码已发送至您的手机，请查收";
 	public static final String GUEST_CAPTCHA_OK = "散客身份验证成功";
-	public static final String GUEST_CAPTCHA_FAIL = "您填写的验证码不正确";
+	public static final String GUEST_CAPTCHA_FAIL = "您填写的验证码已过期或不正确";
 
 	// 结果界面
 	public static final String RESULT_CHECKIN_HINT = "入住手续办理成功，愿您在此度过一段美好时光";

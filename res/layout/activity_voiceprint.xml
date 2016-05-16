@@ -17,8 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:contentDescription="@string/iv_pwd1"
-            android:scaleType="fitCenter" />
+            android:contentDescription="@string/iv_pwd1" />
 
         <ImageView
             android:id="@+id/iv_pwd2"
@@ -26,8 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:contentDescription="@string/iv_pwd2"
-            android:scaleType="fitCenter" />
+            android:contentDescription="@string/iv_pwd2" />
 
         <ImageView
             android:id="@+id/iv_pwd3"
@@ -35,8 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:contentDescription="@string/iv_pwd3"
-            android:scaleType="fitCenter" />
+            android:contentDescription="@string/iv_pwd3" />
 
         <ImageView
             android:id="@+id/iv_pwd4"
@@ -44,8 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:contentDescription="@string/iv_pwd4"
-            android:scaleType="fitCenter" />
+            android:contentDescription="@string/iv_pwd4" />
 
         <ImageView
             android:id="@+id/iv_pwd5"
@@ -53,8 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:contentDescription="@string/iv_pwd5"
-            android:scaleType="fitCenter" />
+            android:contentDescription="@string/iv_pwd5" />
 
         <ImageView
             android:id="@+id/iv_pwd6"
@@ -62,8 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:contentDescription="@string/iv_pwd6"
-            android:scaleType="fitCenter" />
+            android:contentDescription="@string/iv_pwd6" />
 
         <ImageView
             android:id="@+id/iv_pwd7"
@@ -71,8 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:contentDescription="@string/iv_pwd7"
-            android:scaleType="fitCenter" />
+            android:contentDescription="@string/iv_pwd7" />
 
         <ImageView
             android:id="@+id/iv_pwd8"
@@ -80,8 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:contentDescription="@string/iv_pwd8"
-            android:scaleType="fitCenter" />
+            android:contentDescription="@string/iv_pwd8" />
     </LinearLayout>
 
     <ProgressBar

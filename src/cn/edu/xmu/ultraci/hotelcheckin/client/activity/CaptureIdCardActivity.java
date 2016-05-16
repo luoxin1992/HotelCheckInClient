@@ -279,7 +279,7 @@ public class CaptureIdCardActivity extends BaseActivity {
 				extras.putString("idcard", intent.getStringExtra("filename"));
 				// 弹出对话框
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.CAPTURE_ID_CARD_UPLOADED);
-				showDialog(R.drawable.warn, TTS.CAPTURE_ID_CARD_UPLOADED);
+				showDialog(R.drawable.plain, TTS.CAPTURE_ID_CARD_UPLOADED);
 				break;
 			case Broadcast.CORE_FILE_NOT_FOUND:
 			case Broadcast.CORE_SERVER_PROCESS_FAIL:

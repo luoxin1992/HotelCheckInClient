@@ -18,13 +18,13 @@
         android:src="@drawable/smile" />
 
     <Button
-        android:id="@+id/btn_back"
+        android:id="@+id/btn_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
         android:background="@drawable/btn"
-        android:onClick="onBack"
-        android:text="@string/btn_back" />
+        android:onClick="onClose"
+        android:text="@string/btn_close" />
 
 </LinearLayout>

@@ -54,6 +54,18 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		isForeground = true;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		isForeground = false;
+	}
+
+	@Override
 	protected void onStop() {
 		super.onStop();
 
@@ -271,18 +283,22 @@ public class GuestActivity extends BaseActivity implements OnFocusChangeListener
 				break;
 			case Broadcast.CORE_GUEST_OK:
 				isChangingUI = true;
+				extras.putString("customer", "G" + intent.getIntExtra("id", -1));
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.GUEST_CAPTCHA_OK);
-				showDialog(R.drawable.warn, TTS.GUEST_CAPTCHA_OK);
+				showDialog(R.drawable.plain, TTS.GUEST_CAPTCHA_OK);
 				break;
 			case Broadcast.MOB_CAPTCHA_SMS_SEND:
+				dismissProcess();
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.GUEST_CAPTCHA_SEND);
-				showDialog(R.drawable.warn, TTS.GUEST_CAPTCHA_SEND);
+				showDialog(R.drawable.plain, TTS.GUEST_CAPTCHA_SEND);
 				break;
 			case Broadcast.MOB_CAPTCHA_VERIFY_OK:
+				dismissProcess();
 				getCoreServiceBinder().guest(extras.getString("mobile"), extras.getString("idcard"));
 				break;
 			case Broadcast.MOB_CAPTCHA_VERIFY_FAIL:
 				lastCaptchaTime = 0;
+				dismissProcess();
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.GUEST_CAPTCHA_FAIL);
 				showDialog(R.drawable.warn, TTS.GUEST_CAPTCHA_FAIL);
 				break;

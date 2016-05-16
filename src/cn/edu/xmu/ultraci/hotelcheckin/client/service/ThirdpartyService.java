@@ -244,7 +244,7 @@ public class ThirdpartyService extends Service {
 						break;
 					}
 				} else {
-					JSONObject err = JSONObject.parseObject(arg2.toString());
+					JSONObject err = JSONObject.parseObject(((Throwable) arg2).getMessage());
 					if (err.containsKey("status") && err.getInteger("status") == 468) {
 						// 官方无文档，暂时只处理验证码错误468
 						SystemUtil.sendLocalBroadcast(ThirdpartyService.this,

@@ -107,7 +107,7 @@ public class RoomInfoActivity extends BaseActivity {
 
 		tvRoom.setText(extras.getString("room"));
 		tvType.setText(extras.getString("type"));
-		tvPrice.setText(String.valueOf(extras.getDouble("price")));
+		tvPrice.setText(extras.getString("price"));
 		tvMobile.setText(extras.getString("mobile"));
 		tvCheckin.setText(extras.getString("checkin"));
 		tvCheckout.setText(extras.getString("checkout"));

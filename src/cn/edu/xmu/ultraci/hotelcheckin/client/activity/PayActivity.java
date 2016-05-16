@@ -105,8 +105,9 @@ public class PayActivity extends BaseActivity {
 		long date1 = TimeUtil.parseDateTime(extras.getString("checkin"), "yyyy-MM-dd");
 		long date2 = TimeUtil.parseDateTime(extras.getString("checkout"), "yyyy-MM-dd");
 		int dayInvl = TimeUtil.dateInterval(date1, date2);
+		double total = Double.parseDouble(extras.getString("price").substring(1)) * dayInvl;
 		tvDays.setText(String.valueOf(dayInvl));
-		tvTotal.setText(String.valueOf((extras.getDouble("price") * dayInvl)));
+		tvTotal.setText("￥" + total);
 	}
 
 	public void onPay(View v) {

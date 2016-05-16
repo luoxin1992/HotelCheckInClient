@@ -90,7 +90,7 @@
     <string name="btn_pay">我已支付</string>
 
     <!-- 结果界面 -->
-    <string name="btn_back">返回</string>
+    <string name="btn_close">关闭</string>
 
     <!-- 关于界面 -->
     <string name="tv_us">此《酒店自助入住终端》是厦门大学信息科学与技术学院“美团点评杯”软件开发大赛的参赛作品。\n\n参赛选手：\n骆欣\t\t计算机科学系\n谢波\t\t计算机科学系\n刘凯\t\t智能科学与技术系\n</string>

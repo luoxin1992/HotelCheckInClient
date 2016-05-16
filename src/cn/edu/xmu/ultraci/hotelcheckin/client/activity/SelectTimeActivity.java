@@ -50,6 +50,18 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		isForeground = true;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		isForeground = false;
+	}
+
+	@Override
 	protected void onStop() {
 		super.onStop();
 
@@ -68,12 +80,13 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 	public void registerReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Broadcast.THIRDPARTY_SERIVCE_BOUND);
+		filter.addAction(Broadcast.IFLYTEK_SYNTHESIS_OK);
 		receiver = new SelectTimeReceiver();
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
 
 	public void initView() {
-		setContent(true, getTitle().toString(), true, 60, R.layout.activity_select_time, false);
+		setContent(true, getTitle().toString(), true, 30, R.layout.activity_select_time, false);
 		dayPickerView = (DayPickerView) findViewById(R.id.day_picker_view);
 		dayPickerView.setController(this);
 	}

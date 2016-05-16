@@ -30,20 +30,21 @@ public class InitActivity extends BaseActivity {
 	}
 
 	@Override
-	protected void onStart() {
-		super.onStart();
+	protected void onResume() {
+		super.onResume();
 
 		registerReceiver();
 		bindCoreService();
+		bindMiscService();
 		bindThirdpartyService();
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
+	protected void onPause() {
+		super.onPause();
 
-		unbindService();
 		SystemUtil.unregisterLocalBroadcast(this, receiver);
+		unbindService();
 	}
 
 	public void registerReceiver() {
@@ -68,20 +69,14 @@ public class InitActivity extends BaseActivity {
 		setContent(false, null, false, 0, R.layout.activity_init, false);
 	}
 
-	public boolean isInitOk() {
+	public void initOk() {
 		if (++eventCounter >= 5) {
-			return true;
-		} else {
-			return false;
+			Intent intent = new Intent(InitActivity.this, SwipeCardActivity.class);
+			intent.putExtra("action", Action.CLIENT_LOGIN);
+			intent.putExtra("extras", new Bundle());
+			startActivity(intent);
+			finish();
 		}
-	}
-
-	public void toMainActivity() {
-		Intent intent = new Intent(InitActivity.this, SwipeCardActivity.class);
-		intent.putExtra("action", Action.CLIENT_LOGIN);
-		intent.putExtra("extras", new Bundle());
-		startActivity(intent);
-		finish();
 	}
 
 	class InitReceiver extends BroadcastReceiver {
@@ -97,18 +92,14 @@ public class InitActivity extends BaseActivity {
 				getMiscServiceBinder().checkNFC();
 				break;
 			case Broadcast.THIRDPARTY_SERIVCE_BOUND:
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.WELCOME);
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.INIT_WELCOME);
 				break;
 			case Broadcast.IFLYTEK_SYNTHESIS_OK:
-				if (isInitOk()) {
-					toMainActivity();
-				}
+				initOk();
 				break;
 			case Broadcast.CORE_INIT_OK:
 				SystemUtil.setPreferences(InitActivity.this, "announcement", intent.getStringExtra("announcement"));
-				if (isInitOk()) {
-					toMainActivity();
-				}
+				initOk();
 				break;
 			case Broadcast.CORE_QUERY_INFO_OK:
 				InfoDTO retModel = (InfoDTO) intent.getSerializableExtra("retModel");
@@ -116,34 +107,33 @@ public class InitActivity extends BaseActivity {
 				SystemUtil.setPreferences(InitActivity.this, "address", retModel.getContent().get("address"));
 				SystemUtil.setPreferences(InitActivity.this, "telephone", retModel.getContent().get("telephone"));
 				SystemUtil.setPreferences(InitActivity.this, "notice", retModel.getContent().get("notice"));
-				if (isInitOk()) {
-					toMainActivity();
-				}
+				initOk();
 				break;
 			case Broadcast.MISC_BLUETOOTH_NONSUPPORT:
-				// TODO 弹对话框提示不支持NFC
+				showDialog(R.drawable.warn, TTS.INIT_BLUETOOTH_NONSUPPORT);
+				finish();
 				break;
 			case Broadcast.MISC_BLUETOOTH_DISABLE:
-				// TODO 弹对话框提示启动蓝牙
+				showDialog(R.drawable.warn, TTS.INIT_BLUETOOTH_DISABLE);
+				finish();
 				break;
 			case Broadcast.MISC_BLUETOOTH_OK:
-				if (isInitOk()) {
-					toMainActivity();
-				}
+				initOk();
 				break;
 			case Broadcast.MISC_NFC_NONSUPPORT:
-				// TODO 弹对话框提示不支持NFC
+				showDialog(R.drawable.warn, TTS.INIT_NFC_NONSUPPORT);
+				finish();
 				break;
 			case Broadcast.MISC_NFC_DISABLE:
-				// TODO 弹对话框提示启动NFC
+				showDialog(R.drawable.warn, TTS.INIT_NFC_DISABLE);
+				finish();
 				break;
 			case Broadcast.MISC_NFC_OK:
-				if (isInitOk()) {
-					toMainActivity();
-				}
+				initOk();
 				break;
 			case Broadcast.CORE_SERVER_REQUEST_FAIL:
 			case Broadcast.CORE_SERVER_PROCESS_FAIL:
+				showDialog(R.drawable.warn, TTS.INTERNAL_ERROR);
 				finish();
 				break;
 			}

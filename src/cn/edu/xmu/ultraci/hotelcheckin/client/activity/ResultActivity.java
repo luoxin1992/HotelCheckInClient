@@ -38,6 +38,18 @@ public class ResultActivity extends BaseActivity {
 		registerReceiver();
 		bindThirdpartyService();
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		isForeground = true;
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		isForeground = false;
+	}
 
 	@Override
 	protected void onStop() {
@@ -58,7 +70,7 @@ public class ResultActivity extends BaseActivity {
 		SystemUtil.registerLocalBroadcast(this, receiver, filter);
 	}
 
-	public void onBack(View v) {
+	public void onClose(View v) {
 		setResult(RESULT_OK);
 		finish();
 	}

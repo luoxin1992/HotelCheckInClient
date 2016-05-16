@@ -259,7 +259,7 @@ public class SwipeCardActivity extends BaseActivity {
 				isChangingUI = true;
 				// 查询会员成功
 				retModel = intent.getSerializableExtra("retModel");
-				extras.putInt("memberid", ((MemberDTO) retModel).getId());
+				extras.putString("customer", "M" + ((MemberDTO) retModel).getId());
 				extras.putString("name", ((MemberDTO) retModel).getName());
 				extras.putString("mobile", ((MemberDTO) retModel).getMobile());
 				// 合成语音和弹出对话框
@@ -281,7 +281,7 @@ public class SwipeCardActivity extends BaseActivity {
 				extras.putInt("roomid", ((RoomDTO) retModel).getId());
 				extras.putString("room", ((RoomDTO) retModel).getName());
 				extras.putString("type", ((RoomDTO) retModel).getType());
-				extras.putDouble("price", ((RoomDTO) retModel).getPrice());
+				extras.putString("price", "￥" + ((RoomDTO) retModel).getPrice());
 				extras.putString("mobile", ((RoomDTO) retModel).getMobile());
 				extras.putString("checkin", ((RoomDTO) retModel).getCheckin());
 				extras.putString("checkout", ((RoomDTO) retModel).getCheckout());
