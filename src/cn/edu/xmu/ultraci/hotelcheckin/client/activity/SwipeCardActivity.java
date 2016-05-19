@@ -93,8 +93,8 @@ public class SwipeCardActivity extends BaseActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == Code.CHANGE_UI && resultCode == RESULT_OK) {
-			setResult(RESULT_OK);
+		if (requestCode == Code.CHANGE_UI) {
+			setResult(resultCode);
 			finish();
 		}
 	}

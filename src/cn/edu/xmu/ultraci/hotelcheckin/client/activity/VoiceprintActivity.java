@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 import cn.edu.xmu.ultraci.hotelcheckin.client.R;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Action;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Broadcast;
-import cn.edu.xmu.ultraci.hotelcheckin.client.constant.Code;
 import cn.edu.xmu.ultraci.hotelcheckin.client.constant.TTS;
 import cn.edu.xmu.ultraci.hotelcheckin.client.util.SystemUtil;
 
@@ -23,6 +22,7 @@ public class VoiceprintActivity extends BaseActivity {
 
 	private VoiceprintReceiver receiver;
 
+	private int retry = 0;
 	private String action;
 	private Bundle extras;
 
@@ -143,9 +143,27 @@ public class VoiceprintActivity extends BaseActivity {
 						.synthesicSpeech(String.format(TTS.VOICEPRINT_HINT, extras.getString("name")));
 				break;
 			case Broadcast.IFLYTEK_SYNTHESIS_OK:
-				// 待语音播放完毕后才开始验证过程
-				getMiscServiceBinder().playEffect(R.raw.beep);
-				getThirdpartyServiceBinder().verifyVoiceprint(extras.getString("uid"), extras.getString("pwd"));
+				// 重试次数标记为-1时代表验证通过
+				if (retry == -1) {
+					// 登录验证成功进主界面，登出验证成功设置标记关闭主界面
+					switch (action) {
+					case Action.CLIENT_LOGIN:
+						startActivity(new Intent(VoiceprintActivity.this, MainActivity.class));
+						finish();
+						break;
+					case Action.CLIENT_LOGOUT:
+						VoiceprintActivity.this.setResult(RESULT_OK);
+						finish();
+						break;
+					}
+				} else if (retry < 3) {
+					// 待语音播放完毕后才开始验证过程
+					getMiscServiceBinder().playEffect(R.raw.beep);
+					getThirdpartyServiceBinder().verifyVoiceprint(extras.getString("uid"), extras.getString("pwd"));
+				} else {
+					VoiceprintActivity.this.setResult(RESULT_CANCELED);
+					finish();
+				}
 				break;
 			case Broadcast.IFLYTEK_RECORD_START:
 				pbVolume.setVisibility(View.VISIBLE);
@@ -158,29 +176,31 @@ public class VoiceprintActivity extends BaseActivity {
 				break;
 			case Broadcast.IFLYTEK_VERIFY_OK:
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_OK);
-				// 登录验证成功进主界面，登出验证成功设置标记关闭主界面
-				switch (action) {
-				case Action.CLIENT_LOGIN:
-					startActivity(new Intent(VoiceprintActivity.this, MainActivity.class));
-					finish();
-					break;
-				case Action.CLIENT_LOGOUT:
-					VoiceprintActivity.this.setResult(RESULT_OK);
-					finish();
-					break;
-				}
+				retry = -1;
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_VOICE:
-				showPwd();
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_VOICE);
+				if (++retry < 3) {
+					showPwd();
+				} else {
+					getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_LIMITED);
+				}
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_TEXT:
-				showPwd();
 				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_TEXT);
+				if (++retry < 3) {
+					showPwd();
+				} else {
+					getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_LIMITED);
+				}
 				break;
 			case Broadcast.IFLYTEK_VERIFY_FAIL_OTHER:
-				showPwd();
-				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_LIMITED);
+				getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_FAIL_OTHER);
+				if (++retry < 3) {
+					showPwd();
+				} else {
+					getThirdpartyServiceBinder().synthesicSpeech(TTS.VOICEPRINT_LIMITED);
+				}
 				break;
 			}
 		}

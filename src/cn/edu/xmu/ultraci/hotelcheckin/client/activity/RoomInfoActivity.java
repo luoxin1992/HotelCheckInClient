@@ -144,6 +144,7 @@ public class RoomInfoActivity extends BaseActivity {
 				showDialog(R.drawable.warn, TTS.ROOM_INFO_NEED_PAY);
 			} else {
 				// 提交退房信息
+				showProcess();
 				getCoreServiceBinder().checkout(extras.getString("cardid"));
 			}
 			break;

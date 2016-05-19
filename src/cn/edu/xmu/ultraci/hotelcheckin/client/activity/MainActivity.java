@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity {
 			break;
 		case R.id.ib_about:
 			newIntent = new Intent(this, AboutActivity.class);
-			startActivity(newIntent);
+			startActivityForResult(newIntent, Code.CHANGE_UI);
 			break;
 		}
 	}

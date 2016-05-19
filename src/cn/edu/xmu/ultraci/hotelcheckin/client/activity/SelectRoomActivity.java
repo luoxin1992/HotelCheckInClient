@@ -154,7 +154,6 @@ public class SelectRoomActivity extends BaseActivity implements OnItemClickListe
 			gvItemLst.clear();
 		}
 		for (Status status : statusLst) {
-			System.out.println(status.getAvailable());
 			Map<String, Object> item = new HashMap<String, Object>();
 			if (status.getAvailable() == 0) {
 				item.put("image", R.drawable.room_normal);

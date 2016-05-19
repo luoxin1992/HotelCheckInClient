@@ -54,12 +54,6 @@
             android:inputType="none"
             android:singleLine="true" />
 
-        <!--
-        style="?android:attr/textViewStyle"
-        android:selectAllOnFocus="true"
-        android:textSize="28sp"
-        -->
-
         <Button
             android:id="@+id/btn_captcha"
             android:layout_width="wrap_content"

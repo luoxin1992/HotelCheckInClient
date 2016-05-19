@@ -7,13 +7,28 @@
     android:orientation="horizontal"
     tools:context="${relativePackage}.${activityClass}" >
 
-    <ImageView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
         android:layout_weight="1"
-        android:contentDescription="@string/iv_us"
-        android:src="@drawable/us" />
+        android:orientation="vertical" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:contentDescription="@string/iv_us"
+            android:src="@drawable/us" />
+
+        <Button
+            android:id="@+id/btn_exit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/btn"
+            android:onClick="onExit"
+            android:text="@string/btn_exit" />
+    </LinearLayout>
 
     <View
         android:layout_width="1dp"

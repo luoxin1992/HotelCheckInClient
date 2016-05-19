@@ -10,11 +10,11 @@ package cn.edu.xmu.ultraci.hotelcheckin.client.constant;
 public class Config {
 	// 服务端
 	// 美团云
-	// public static final String SERVER_IP = "103.37.165.152";
-	// public static final String SERVER_PORT = "8081";
+	public static final String SERVER_IP = "103.37.165.152";
+	public static final String SERVER_PORT = "8081";
 	// 测试服
-	public static final String SERVER_IP = "10.30.167.221";
-	public static final String SERVER_PORT = "9237";
+	// public static final String SERVER_IP = "10.30.188.223";
+	// public static final String SERVER_PORT = "9237";
 
 	// 服务端请求URL
 	public static final String URK_PREFIX = "http://" + Config.SERVER_IP + ":" + Config.SERVER_PORT;

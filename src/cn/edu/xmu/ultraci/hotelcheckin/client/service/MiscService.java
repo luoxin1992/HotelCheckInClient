@@ -300,7 +300,7 @@ public class MiscService extends Service {
 					setPrintFormat(Bluetooth.FONT_2, Bluetooth.FONT_REGULAR, Bluetooth.ALIGN_LEFT);
 					printText("房号：" + extras.getString("room"));
 					printText("房型：" + extras.getString("type"));
-					printText("房价：" + extras.getDouble("price"));
+					printText("房价：" + extras.getString("price"));
 					printText("入住：" + extras.getString("checkin"));
 					printText("预离：" + extras.getString("checkout"));
 					// 分割线
@@ -321,6 +321,7 @@ public class MiscService extends Service {
 					printText("\n\n");
 					// 断开打印机
 					disconnectPrinter();
+					SystemUtil.sendLocalBroadcast(MiscService.this, new Intent(Broadcast.MISC_PRINTER_OK));
 				} catch (IOException e) {
 					Log.e(TAG, String.format(LogTemplate.MISC_PRINTER_FAIL, e.getMessage()));
 					SystemUtil.sendLocalBroadcast(MiscService.this, new Intent(Broadcast.MISC_PRINTER_FAIL));

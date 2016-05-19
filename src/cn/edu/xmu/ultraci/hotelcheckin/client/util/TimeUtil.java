@@ -127,9 +127,9 @@ public class TimeUtil {
 	 *            日期1
 	 * @param date2
 	 *            日期2
-	 * @return true - 日期1早于日期2，false - 日期1晚于日期2
+	 * @return true - 日期1早于或等于日期2，false - 日期1晚于日期2
 	 */
 	public static boolean dateEarlyThan(String date1, String date2) {
-		return parseDateTime(date1, "yyyy-MM-dd") - parseDateTime(date2, "yyyy-MM-dd") < 0;
+		return parseDateTime(date1, "yyyy-MM-dd") - parseDateTime(date2, "yyyy-MM-dd") <= 0;
 	}
 }

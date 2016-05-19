@@ -94,6 +94,7 @@
 
     <!-- 关于界面 -->
     <string name="tv_us">此《酒店自助入住终端》是厦门大学信息科学与技术学院“美团点评杯”软件开发大赛的参赛作品。\n\n参赛选手：\n骆欣\t\t计算机科学系\n谢波\t\t计算机科学系\n刘凯\t\t智能科学与技术系\n</string>
+    <string name="btn_exit">退出</string>
 
     <!-- 进度对话框 -->
     <string name="tv_waiting">请稍候……</string>

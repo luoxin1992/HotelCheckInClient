@@ -103,18 +103,26 @@ public class SelectTimeActivity extends BaseActivity implements DatePickerContro
 
 	@Override
 	public void onDateRangeSelected(SelectedDays<CalendarDay> selectedDays) {
-		if (action.equals(Action.CLIENT_EXTENSION)) {
-			// 办理续住时需判断所选时间不早于原定的预离时间
+		switch (action) {
+		case Action.CLIENT_MEMBER_CHECKIN:
+		case Action.CLIENT_GUEST_CHECKIN:
+			extras.putString("checkin", selectedDays.getFirst().toString());
+			extras.putString("checkout", selectedDays.getLast().toString());
+			break;
+		case Action.CLIENT_EXTENSION:
 			if (TimeUtil.dateEarlyThan(selectedDays.getLast().toString(), extras.getString("checkout"))) {
+				// 办理续住时需判断所选时间不早于原定的预离时间
 				getThirdpartyServiceBinder()
 						.synthesicSpeech(String.format(TTS.SELECT_TIME_EARLY, extras.getString("checkout")));
 				showDialog(R.drawable.warn, String.format(TTS.SELECT_TIME_EARLY, extras.getString("checkout")));
 				return;
+			} else {
+				// 续住时新的入住时间就是原先的预离时间
+				extras.putString("checkin", extras.getString("checkout"));
+				extras.putString("checkout", selectedDays.getLast().toString());
 			}
+			break;
 		}
-		// 将入住日期和预离日期放入参数列表
-		extras.putString("checkin", selectedDays.getFirst().toString());
-		extras.putString("checkout", selectedDays.getLast().toString());
 		// 提示用户所选择的日期
 		isChangingUI = true;
 		getThirdpartyServiceBinder().synthesicSpeech(String.format(TTS.SELECT_TIME_OK, extras.getString("checkout")));

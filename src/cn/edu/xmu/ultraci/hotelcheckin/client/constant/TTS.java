@@ -28,7 +28,7 @@ public class TTS {
 
 	public static final String SWIPE_CARD_ROOM_HINT = "请将您的房卡放置在感应区内";
 	public static final String SWIPE_CARD_ROOM_OK = "您好，%s房间";
-	public static final String SWIPE_CARD_ROOM_NO_CHECKIN = "没有%s房间的入住信息，请联系前台";
+	public static final String SWIPE_CARD_ROOM_NO_CHECKIN = "没有%s房间的入住信息，请与前台联系";
 	public static final String SWIPE_CARD_ROOM_NO_SUCH_CARD = "请刷房卡";
 
 	// 声纹验证界面
@@ -50,16 +50,16 @@ public class TTS {
 
 	// 房间信息界面
 	public static final String ROOM_INFO_HINT = "请您核对屏幕上显示信息准确无误";
-	public static final String ROOM_INFO_NEED_PAY = "您的房间已经欠费，请联系前台";
+	public static final String ROOM_INFO_NEED_PAY = "您的房间已经欠费，请与前台联系";
 
 	// 支付界面
 	public static final String PAY_HINT = "请您扫描屏幕上的二维码完成支付";
 	public static final String PAY_PRINT_OK = "支付成功。小票打印完毕，请沿锯齿撕下";
-	public static final String PAY_PRINT_FAIL = "支付成功。如需打印小票，请联系前台";
+	public static final String PAY_PRINT_FAIL = "支付成功。如需打印小票，请与前台联系";
 
 	// 拍摄身份证界面
 	public static final String CAPTURE_ID_CARD_HINT = "请将您的身份证放置在拍摄区域内，然后点击屏幕完成拍照";
-	public static final String CAPTURE_ID_CARD_UPLOADED = "身份证照已上传";
+	public static final String CAPTURE_ID_CARD_UPLOADED = "身份证照片已上传";
 
 	// 散客登记界面
 	public static final String GUEST_HINT = "请验证您的手机号码";

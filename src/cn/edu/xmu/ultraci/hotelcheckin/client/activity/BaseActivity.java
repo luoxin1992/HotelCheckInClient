@@ -324,7 +324,7 @@ public abstract class BaseActivity extends Activity {
 	 * 隐藏加载提示框
 	 */
 	public void dismissProcess() {
-		if (pdWaiting.isShowing()) {
+		if (pdWaiting != null && pdWaiting.isShowing()) {
 			pdWaiting.dismiss();
 		}
 	}

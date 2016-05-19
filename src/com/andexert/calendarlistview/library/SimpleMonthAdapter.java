@@ -256,10 +256,10 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
 			stringBuilder.append(year);
 			stringBuilder.append('-');
 			// stringBuilder.append(", month: ");
-			stringBuilder.append(month + 1);
+			stringBuilder.append(month < 9 ? "0" + (month + 1) : (month + 1));
 			stringBuilder.append('-');
 			// stringBuilder.append(", day: ");
-			stringBuilder.append(day);
+			stringBuilder.append(day < 9 ? "0" + day : day);
 			// stringBuilder.append(" }");
 			return stringBuilder.toString();
 		}
